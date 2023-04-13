@@ -66,6 +66,6 @@
   "include": [
     "lib/**/*.d.ts",
     "lib**/*.ts",
-    ".eslintrc.js"
+    ".eslintrc.js",
   ]
 }

@@ -22,6 +22,7 @@ module.exports = {
 	ignorePatterns: [
 		'styleguide',
 		'dist',
-		'examples'
+		'examples',
+		'lib/bindings.d.ts'
 	]
 };

@@ -12,6 +12,9 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Submodule update
+      run: git submodule init && git submodule update
+
     - name: Set Node.js 18.x
       uses: actions/setup-node@master
       with:

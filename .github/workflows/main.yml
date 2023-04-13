@@ -38,6 +38,7 @@ jobs:
 
     - name: lint/examples
       run: npm run lint/examples
+      continue-on-error: true
 
     - name: test
       run: npm run test

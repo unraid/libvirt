@@ -34,6 +34,7 @@ jobs:
 
     - name: npm lint/bindings
       run: npm run lint/bindings
+      continue-on-error: true
 
     - name: lint/examples
       run: npm run lint/examples

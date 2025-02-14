@@ -31,7 +31,7 @@
             },
             "conditions": [
                 ["OS==\"mac\"", {
-                    "include_dirs": ["<!(echo $LIBVIRT_INCLUDE_DIR)"],
+                    "include_dirs": ["<!(echo ${LIBVIRT_INCLUDE_DIR:=/opt/homebrew/include})"],
                     "libraries": [
                         "<!(echo ${LIBVIRT_LIB_DIR:=/opt/homebrew/lib})/libvirt.dylib"
                     ],

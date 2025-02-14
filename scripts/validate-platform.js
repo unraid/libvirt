@@ -47,26 +47,8 @@ For Arch Linux:
   return false;
 }
 
-async function build() {
-  try {
-    // Check libvirt installation first
-    if (!checkLibvirt()) {
-      console.error("Libvirt is not available on this platform");
-      process.exit(1);
-    }
 
-    console.log("Running native build...");
-    execSync("pnpm run build/native", { stdio: "inherit" });
-
-    console.log("Running TypeScript build...");
-    execSync("pnpm run build/ts", { stdio: "inherit" });
-  } catch (error) {
-    console.error("Failed to build:", error);
-    process.exit(1);
-  }
-}
-
-build().catch((error) => {
-  console.error("Unhandled error:", error);
+if (!checkLibvirt()) {
+  console.error("Libvirt is not available on this platform");
   process.exit(1);
-});
+}

@@ -17,13 +17,12 @@
   },
   "files": [
     "dist",
-    "build",
-    "scripts"
+    "build"
   ],
   "scripts": {
-    "prepare": "pnpm run build",
-    "build": "node scripts/conditional-build.js",
-    "build/native": "node scripts/build-native.js",
+    "build": "pnpm build/validate && pnpm build/native && pnpm build/ts",
+    "build/validate": "node scripts/validate-platform.js",
+    "build/native": "node-gyp rebuild",
     "build/ts": "tsc",
     "test": "mocha --import=tsx lib/**/*.spec.ts",
     "examples/list": "node examples/list.js",

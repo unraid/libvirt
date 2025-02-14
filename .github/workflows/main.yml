@@ -76,6 +76,11 @@ jobs:
       - name: test
         run: pnpm run test
 
+      - name: Setup NPM Authentication
+        if: ${{ needs.release-please.outputs.release_created }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Publish to NPM
         if: ${{ needs.release-please.outputs.release_created }}
         run: pnpm publish

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/unraid/libvirt/compare/v1.0.1...v1.0.2) (2025-02-14)
+
+
+### Bug Fixes
+
+* make public ([3916d0b](https://github.com/unraid/libvirt/commit/3916d0b62adfe0fa3c013755e27983bca1e1d84c))
+
 ## [1.0.1](https://github.com/unraid/libvirt/compare/v1.0.0...v1.0.1) (2025-02-14)
 
 

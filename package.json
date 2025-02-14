@@ -28,8 +28,7 @@
     "examples/list": "node examples/list.js",
     "examples/start": "node examples/start.js",
     "examples/shutdown": "node examples/shutdown.js",
-    "examples/builder": "node examples/builder.js",
-    "preinstall": "node scripts/conditional-build.js"
+    "examples/builder": "node examples/builder.js"
   },
   "repository": {
     "type": "git",

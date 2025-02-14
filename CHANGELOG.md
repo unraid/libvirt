@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/unraid/libvirt/compare/v1.0.3...v1.0.4) (2025-02-14)
+
+
+### Bug Fixes
+
+* validate platform before building ([b99c96e](https://github.com/unraid/libvirt/commit/b99c96e256dada5bd8bf12964eb1ef524aee784c))
+
 ## [1.0.3](https://github.com/unraid/libvirt/compare/v1.0.2...v1.0.3) (2025-02-14)
 
 

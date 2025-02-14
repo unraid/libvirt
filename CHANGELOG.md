@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/unraid/libvirt/compare/v1.0.0...v1.0.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* setup auth before pushing ([aad64b4](https://github.com/unraid/libvirt/commit/aad64b40a4e8cdd7611c3311076e0cd5a711f7e0))
+
 ## 1.0.0 (2025-02-14)
 
 

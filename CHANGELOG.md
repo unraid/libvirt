@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/unraid/libvirt/compare/v1.0.4...v1.0.5) (2025-02-14)
+
+
+### Bug Fixes
+
+* incorrect preinstall script ([7737271](https://github.com/unraid/libvirt/commit/7737271f9db9f736bcefd80c71ed12bf622bac57))
+
 ## [1.0.4](https://github.com/unraid/libvirt/compare/v1.0.3...v1.0.4) (2025-02-14)
 
 

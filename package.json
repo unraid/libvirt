@@ -49,12 +49,12 @@
     "virtuozzo",
     "bhyve"
   ],
-  "author": "Leon Rinkel <leon@rinkel.me>",
+  "author": "Unraid Team (original author Leon Rinkel <leon@rinkel.me>)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vmngr/libvirt/issues"
+    "url": "https://github.com/unraid/libvirt/issues"
   },
-  "homepage": "https://github.com/vmngr/libvirt#readme",
+  "homepage": "https://github.com/unraid/libvirt#readme",
   "dependencies": {
     "bindings": "^1.5.0",
     "node-addon-api": "^8.3.0",

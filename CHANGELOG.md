@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/unraid/libvirt/compare/v1.0.5...v1.1.0) (2025-02-20)
+
+
+### Features
+
+* build libvirt to libvirt not virt ([#22](https://github.com/unraid/libvirt/issues/22)) ([8ee61f6](https://github.com/unraid/libvirt/commit/8ee61f63b9c13732da7f1274920ba764edbf1c7d))
+
 ## [1.0.5](https://github.com/unraid/libvirt/compare/v1.0.4...v1.0.5) (2025-02-14)
 
 

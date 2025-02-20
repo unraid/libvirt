@@ -2,6 +2,7 @@
     "targets": [
         {
             "target_name": "libvirt",
+            "product_name": "libvirt",
             "sources": [
                 "src/libvirt.cc",
                 "src/worker.cc",

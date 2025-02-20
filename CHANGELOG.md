@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/unraid/libvirt/compare/v1.1.1...v1.1.2) (2025-02-20)
+
+
+### Bug Fixes
+
+* binding name conflict ([3b25b49](https://github.com/unraid/libvirt/commit/3b25b497a11aae436d75860d7bf0ecc960cf89b8))
+* **deps:** update all non-major dependencies ([#24](https://github.com/unraid/libvirt/issues/24)) ([6d64f58](https://github.com/unraid/libvirt/commit/6d64f585c6b73ac027b716562c424bd4685e2f4c))
+
 ## [1.1.1](https://github.com/unraid/libvirt/compare/v1.1.0...v1.1.1) (2025-02-20)
 
 

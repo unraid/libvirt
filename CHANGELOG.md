@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/unraid/libvirt/compare/v1.1.0...v1.1.1) (2025-02-20)
+
+
+### Bug Fixes
+
+* version specifier not needed ([ac25f6d](https://github.com/unraid/libvirt/commit/ac25f6d82898393f3e82db4f771f7e859824e310))
+
 ## [1.1.0](https://github.com/unraid/libvirt/compare/v1.0.5...v1.1.0) (2025-02-20)
 
 

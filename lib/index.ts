@@ -4,7 +4,7 @@ import {
 	ConnectListAllDomainsFlags,
 	DomainGetXMLDescFlags,
 	DomainState
-} from './bindings';
+} from './get-bindings';
 
 // Contains actual libvirt bindings and related declarations.
 export {

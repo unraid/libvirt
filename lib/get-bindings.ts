@@ -8,9 +8,9 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-require-imports
-export const { Hypervisor } = require('bindings')('libvirt');
+export const { Hypervisor } = require('bindings')('libvirt.node');
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-require-imports
-export const { Domain } = require('bindings')('libvirt');
+export const { Domain } = require('bindings')('libvirt.node');
 
 export const ConnectListAllDomainsFlags = {
 	ACTIVE: 1,

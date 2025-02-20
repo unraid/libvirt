@@ -50,7 +50,6 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
           run_install: false
 
       - name: Get pnpm store directory
@@ -71,10 +70,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: |
-          pnpm run build
-          # Verify the binding exists
-          ls -la build/Release/
+        run: pnpm run build
 
       - name: test
         run: pnpm run test

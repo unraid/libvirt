@@ -6,6 +6,8 @@
  *
  * @brief Contains actual libvirt bindings and related declarations.
  */
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-require-imports
 export const { Hypervisor } = require('bindings')('libvirt.node');

@@ -21,7 +21,7 @@ import {
 	DomainDiskDesc,
 	DomainInterfaceDesc,
 	DomainGraphicsDesc
-} from './domain-desc';
+} from './domain-desc.js';
 
 const $ = {};
 

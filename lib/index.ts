@@ -4,7 +4,7 @@ import {
 	ConnectListAllDomainsFlags,
 	DomainGetXMLDescFlags,
 	DomainState
-} from './get-bindings';
+} from './get-bindings.js';
 
 // Contains actual libvirt bindings and related declarations.
 export {
@@ -16,8 +16,8 @@ export {
 };
 
 // Contains interfaces to describe domains, networks, etc.
-export * from './domain-desc';
+export * from './domain-desc.js';
 // Contains helper functions to serialize domain descriptions to XML.
-export * from './domain-xml';
+export * from './domain-xml.js';
 // Contains a builder class to construct domain descriptions.
-export * from './domain-builder';
+export * from './domain-builder.js';

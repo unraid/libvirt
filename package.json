@@ -23,7 +23,7 @@
     "build": "pnpm build/validate && pnpm build/native && pnpm build/ts",
     "build/validate": "node scripts/validate-platform.js",
     "build/native": "node-gyp rebuild",
-    "build/ts": "tsc",
+    "build/ts": "tsc --build --verbose",
     "test": "mocha --import=tsx lib/**/*.spec.ts",
     "examples/list": "node examples/list.js",
     "examples/start": "node examples/start.js",

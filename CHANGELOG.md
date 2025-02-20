@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/unraid/libvirt/compare/v1.1.2...v1.1.3) (2025-02-20)
+
+
+### Bug Fixes
+
+* convert to pure esm nodenext ([d3becfc](https://github.com/unraid/libvirt/commit/d3becfc12f27b48fd8ba2d6954a5a144856328b5))
+
 ## [1.1.2](https://github.com/unraid/libvirt/compare/v1.1.1...v1.1.2) (2025-02-20)
 
 

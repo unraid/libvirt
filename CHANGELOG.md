@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/unraid/libvirt/compare/v1.1.3...v1.1.4) (2025-03-20)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#28](https://github.com/unraid/libvirt/issues/28)) ([e44c033](https://github.com/unraid/libvirt/commit/e44c03338a90a51a72a9a08aca1289eb0267b1d0))
+
 ## [1.1.3](https://github.com/unraid/libvirt/compare/v1.1.2...v1.1.3) (2025-02-20)
 
 

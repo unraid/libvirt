@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/unraid/libvirt/compare/v1.2.1...v1.2.2) (2025-03-28)
+
+
+### Bug Fixes
+
+* more type issues ([c173e44](https://github.com/unraid/libvirt/commit/c173e44f44cf954abd0bc51f71f8108d220f8649))
+
 ## [1.2.1](https://github.com/unraid/libvirt/compare/v1.2.0...v1.2.1) (2025-03-28)
 
 

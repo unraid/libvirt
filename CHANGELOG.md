@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/unraid/libvirt/compare/v1.1.4...v1.2.0) (2025-03-28)
+
+
+### Features
+
+* move types to ensure consistent usage ([a81afa9](https://github.com/unraid/libvirt/commit/a81afa9af8c8e48332a92688a1ee042a0e38c098))
+
 ## [1.1.4](https://github.com/unraid/libvirt/compare/v1.1.3...v1.1.4) (2025-03-28)
 
 

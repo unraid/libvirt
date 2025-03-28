@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/unraid/libvirt/compare/v1.2.0...v1.2.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* output types to root ([60234ec](https://github.com/unraid/libvirt/commit/60234ecb5efa52fb8f64c17b8a222b90ea7d0a6e))
+
 ## [1.2.0](https://github.com/unraid/libvirt/compare/v1.1.4...v1.2.0) (2025-03-28)
 
 

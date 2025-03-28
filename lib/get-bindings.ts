@@ -7,13 +7,23 @@
  * @brief Contains actual libvirt bindings and related declarations.
  */
 import { createRequire } from "node:module";
+import type { HypervisorOptions } from './types.js';
+
 const require = createRequire(import.meta.url);
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-require-imports
-export const { Hypervisor } = require('bindings')('libvirt.node');
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-var-requires,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-require-imports
-export const { Domain } = require('bindings')('libvirt.node');
+// Define the native module interface
+interface NativeLibvirt {
+	Hypervisor: new (options: HypervisorOptions) => any;
+	Domain: new () => any;
+}
 
+// Import the native bindings
+const bindings = require('bindings')('libvirt.node') as NativeLibvirt;
+
+// Export the native classes directly
+export const { Hypervisor, Domain } = bindings;
+
+// Export the flags as const objects for better type inference
 export const ConnectListAllDomainsFlags = {
 	ACTIVE: 1,
 	INACTIVE: 2,
@@ -31,14 +41,14 @@ export const ConnectListAllDomainsFlags = {
 	NO_SNAPSHOT: 8192,
 	HAS_CHECKPOINT: 16384,
 	NO_CHECKPOINT: 32768
-};
+} as const;
 
 export const DomainGetXMLDescFlags = {
 	SECURE: 1,
 	INACTIVE: 2,
 	UPDATE_CPU: 4,
 	MIGRATABLE: 8
-};
+} as const;
 
 // https://libvirt.org/manpages/virsh.html#list
 export const DomainState = {
@@ -52,4 +62,4 @@ export const DomainState = {
 	SHUTOFF: 5,
 	CRASHED: 6,
 	PMSUSPENDED: 7
-};
+} as const;

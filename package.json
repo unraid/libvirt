@@ -96,5 +96,5 @@
     "linux": "libvirt-dev package (Ubuntu/Debian) or libvirt-devel package (RHEL/CentOS)",
     "darwin": "libvirt package from Homebrew"
   },
-  "packageManager": "pnpm@10.6.5"
+  "packageManager": "pnpm@10.7.0"
 }

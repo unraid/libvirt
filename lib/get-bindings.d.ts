@@ -57,14 +57,74 @@ export declare const enum DomainGetXMLDescFlags {
     MIGRATABLE = 8,
 }
 
-export declare class Domain {}
+export declare class Domain {
+    isActive(): Promise<boolean>;
+    isPersistent(): Promise<boolean>;
+    isUpdated(): Promise<boolean>;
+    
+    suspend(): Promise<void>;
+    resume(): Promise<void>;
+    shutdown(): Promise<void>;
+    reboot(flags?: DomainRebootFlags): Promise<void>;
+    reset(): Promise<void>;
+    
+    getState(): Promise<DomainState>;
+    getMaxMemory(): Promise<number>;
+    setMaxMemory(memory: number): Promise<void>;
+    getMemory(): Promise<number>;
+    setMemory(memory: number): Promise<void>;
+    getMaxVcpus(): Promise<number>;
+    setVcpus(vcpus: number): Promise<void>;
+    getVcpus(): Promise<number>;
+    
+    getXMLDesc(flags?: DomainGetXMLDescFlags): Promise<string>;
+    defineXML(xml: string): Promise<void>;
+    
+    hasCurrentSnapshot(): Promise<boolean>;
+    hasSnapshot(): Promise<boolean>;
+    
+    getBlockInfo(device: string): Promise<DomainBlockInfo>;
+    getBlockDevices(): Promise<string[]>;
+    
+    getInterfaceAddresses(source?: DomainInterfaceAddressesSource): Promise<DomainInterfaceInfo[]>;
+}
+
+export declare enum DomainRebootFlags {
+    NONE = 0,
+    ACPI = 1,
+    GUEST_AGENT = 2,
+    INIT = 4,
+    SIGNAL = 8,
+}
+
+export declare enum DomainInterfaceAddressesSource {
+    LEASE = 0,
+    AGENT = 1,
+    ARP = 2,
+}
+
+export declare interface DomainBlockInfo {
+    capacity: number;
+    allocation: number;
+    physical: number;
+}
+
+export declare interface DomainInterfaceInfo {
+    name: string;
+    hwaddr: string;
+    addrs: DomainInterfaceAddress[];
+}
+
+export declare interface DomainInterfaceAddress {
+    type: number;
+    addr: string;
+    prefix: number;
+}
 
 // https://libvirt.org/manpages/virsh.html#list
 export declare const enum DomainState {
     NOSTATE     = 0,
     RUNNING     = 1,
-	// Docs are wrong this is not IDLE this is BLOCKED
-	// libvirt-domain.h can prove this
     BLOCKED     = 2,
     PAUSED      = 3,
     SHUTDOWN    = 4,

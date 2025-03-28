@@ -89,7 +89,7 @@ export declare class Domain {
     getInterfaceAddresses(source?: DomainInterfaceAddressesSource): Promise<DomainInterfaceInfo[]>;
 }
 
-export declare const enum DomainRebootFlags {
+export declare enum DomainRebootFlags {
     NONE = 0,
     ACPI = 1,
     GUEST_AGENT = 2,

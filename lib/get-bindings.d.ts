@@ -97,7 +97,7 @@ export declare const enum DomainRebootFlags {
     SIGNAL = 8,
 }
 
-export declare const enum DomainInterfaceAddressesSource {
+export declare enum DomainInterfaceAddressesSource {
     LEASE = 0,
     AGENT = 1,
     ARP = 2,

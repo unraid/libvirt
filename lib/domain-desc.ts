@@ -144,5 +144,8 @@ export declare interface DomainDesc {
 	} | {
 		type: 'graphics';
 		graphics: DomainGraphicsDesc;
+	} | {
+		type: 'acpi';
+		acpi: Record<string, never>;
 	}>;
 }

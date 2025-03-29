@@ -297,7 +297,6 @@ export const domainGraphicsXml = {
 	}
 };
 
-// eslint-disable-next-line complexity
 export function domainDescToXml(desc: DomainDesc): string {
 	const domain: any = { $: { } };
 
@@ -360,20 +359,19 @@ export function domainDescToXml(desc: DomainDesc): string {
 			disk: [],
 			interface: [],
 			console: [],
-			graphics: []
+			graphics: [],
+			acpi: []
 		};
 
 		for (const deviceDesc of desc.devices) {
-			const device: any = { $: { } };
-
 			switch (deviceDesc.type) {
 				case 'emulator':
 					const emulatorDesc = deviceDesc.emulator;
 					if (emulatorDesc.value) {
-						device._ = emulatorDesc.value;
+						domain.devices.emulator.push({
+							_: emulatorDesc.value
+						});
 					}
-
-					domain.devices.emulator.push(device);
 					break;
 
 				case 'disk':
@@ -388,16 +386,20 @@ export function domainDescToXml(desc: DomainDesc): string {
 
 				case 'console':
 					const consoleDesc = deviceDesc.console;
-					if (consoleDesc.type) {
-						device.$.type = consoleDesc.type;
-					}
-
-					domain.devices.console.push(device);
+					domain.devices.console.push({
+						$: {
+							type: consoleDesc.type
+						}
+					});
 					break;
 
 				case 'graphics':
 					domain.devices.graphics.push(
 						domainGraphicsXml.serialize(deviceDesc.graphics));
+					break;
+
+				case 'acpi':
+					domain.devices.acpi.push({});
 					break;
 
 				default:

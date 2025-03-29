@@ -20,20 +20,12 @@ describe('Integration Tests', () => {
                 return {
                     arch: 'aarch64',
                     machine: 'virt',
-                    firmware: {
-                        code: '/opt/homebrew/share/qemu/edk2-aarch64-code.fd',
-                        vars: '/opt/homebrew/share/qemu/edk2-arm-vars.fd'
-                    },
                     emulator: '/opt/homebrew/bin/qemu-system-aarch64'
                 };
             } else {
                 return {
                     arch: 'x86_64',
                     machine: 'q35',
-                    firmware: {
-                        code: '/opt/homebrew/share/qemu/edk2-x86_64-code.fd',
-                        vars: '/opt/homebrew/share/qemu/edk2-i386-vars.fd'
-                    },
                     emulator: '/opt/homebrew/bin/qemu-system-x86_64'
                 };
             }
@@ -42,20 +34,12 @@ describe('Integration Tests', () => {
                 return {
                     arch: 'aarch64',
                     machine: 'virt',
-                    firmware: {
-                        code: '/usr/share/qemu/edk2-aarch64-code.fd',
-                        vars: '/usr/share/qemu/edk2-arm-vars.fd'
-                    },
                     emulator: '/usr/bin/qemu-system-aarch64'
                 };
             } else {
                 return {
                     arch: 'x86_64',
                     machine: 'q35',
-                    firmware: {
-                        code: '/usr/share/qemu/edk2-x86_64-code.fd',
-                        vars: '/usr/share/qemu/edk2-i386-vars.fd'
-                    },
                     emulator: '/usr/bin/qemu-system-x86_64'
                 };
             }
@@ -65,19 +49,19 @@ describe('Integration Tests', () => {
     // Check if QEMU and firmware are available
     const verifyQemuInstallation = () => {
         const archConfig = getArchConfig();
-        const qemuPath = process.platform === 'darwin' ? '/opt/homebrew/bin/qemu-system-aarch64' : '/usr/bin/qemu-system-aarch64';
-        const firmwareCodePath = process.platform === 'darwin' ? '/opt/homebrew/share/qemu/edk2-aarch64-code.fd' : '/usr/share/qemu/edk2-aarch64-code.fd';
-        const firmwareVarsPath = process.platform === 'darwin' ? '/opt/homebrew/share/qemu/edk2-arm-vars.fd' : '/usr/share/qemu/edk2-arm-vars.fd';
+        const qemuPath = archConfig.emulator;
+        const firmwareCodePath = archConfig.firmware?.code;
+        const firmwareVarsPath = archConfig.firmware?.vars;
 
         if (!existsSync(qemuPath)) {
             throw new Error(`QEMU not found at ${qemuPath}. Please install QEMU first.`);
         }
 
-        if (!existsSync(firmwareCodePath)) {
+        if (firmwareCodePath && !existsSync(firmwareCodePath)) {
             throw new Error(`UEFI firmware code not found at ${firmwareCodePath}. Please ensure QEMU is properly installed.`);
         }
 
-        if (!existsSync(firmwareVarsPath)) {
+        if (firmwareVarsPath && !existsSync(firmwareVarsPath)) {
             throw new Error(`UEFI firmware vars not found at ${firmwareVarsPath}. Please ensure QEMU is properly installed.`);
         }
         return archConfig;
@@ -225,21 +209,7 @@ describe('Integration Tests', () => {
                     machine: archConfig.machine,
                     value: 'hvm'
                 },
-                boot: { dev: 'hd' },
-                ...(archConfig.firmware ? {
-                    loader: [
-                        {
-                            readonly: 'no',
-                            type: 'pflash',
-                            value: '/tmp/test-vm.nvram'
-                        },
-                        {
-                            readonly: 'yes',
-                            type: 'pflash',
-                            value: archConfig.firmware.code
-                        }
-                    ]
-                } : {})
+                boot: { dev: 'hd' }
             },
             devices: [
                 {
@@ -253,14 +223,24 @@ describe('Integration Tests', () => {
                     disk: {
                         type: 'file',
                         device: 'disk',
-                        driver: { name: 'qemu', type: 'qcow2' },
-                        source: { file: DISK_IMAGE },
-                        target: { dev: 'vda', bus: 'virtio' }
+                        driver: {
+                            name: 'qemu',
+                            type: 'qcow2'
+                        },
+                        source: {
+                            file: DISK_IMAGE
+                        },
+                        target: {
+                            dev: 'vda',
+                            bus: 'virtio'
+                        }
                     }
                 },
                 {
                     type: 'console',
-                    console: { type: 'pty' }
+                    console: {
+                        type: 'pty'
+                    }
                 }
             ]
         };

@@ -42,12 +42,6 @@ jobs:
           packages: libvirt-dev qemu-system
           version: 1.0
 
-      - name: Install libvirt and QEMU
-        run: |
-          sudo systemctl start libvirtd
-          sudo usermod -a -G libvirt $USER
-          sudo chmod 666 /var/run/libvirt/libvirt-sock
-
       - name: Set Node.js
         uses: actions/setup-node@v4
         with:
@@ -78,8 +72,8 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: test
-        run: pnpm run test
+      - name: Run Unit Tests
+        run: pnpm run test:unit
 
       - name: Setup NPM Authentication
         if: ${{ needs.release-please.outputs.release_created }}

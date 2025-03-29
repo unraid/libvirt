@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { Domain, DomainState } from '../lib';
 import { domainDescToXml } from '../lib/domain-xml';
 import { DomainDesc } from '../lib/domain-desc';
@@ -14,6 +14,24 @@ describe('Domain Lifecycle Tests', () => {
         const env = await setupTestEnv();
         connection = env.connection;
         archConfig = env.archConfig;
+    }, 10000);
+
+    beforeEach(async () => {
+        // Clean up any existing domain
+        try {
+            const existingDomain = await connection.domainLookupByName(TEST_VM_NAME);
+            if (existingDomain) {
+                const info = await connection.domainGetInfo(existingDomain);
+                if (info.state === DomainState.RUNNING) {
+                    await connection.domainShutdown(existingDomain);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+                await connection.domainUndefine(existingDomain);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        } catch (error) {
+            // Ignore errors from cleanup
+        }
     }, 10000);
 
     afterAll(async () => {
@@ -153,5 +171,5 @@ describe('Domain Lifecycle Tests', () => {
             // Clear the domain reference before cleanup
             domain = null;
         }
-    }, 30000);
+    }, 60000);
 }); 

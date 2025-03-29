@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { Domain, DomainState } from '../lib';
 import { domainDescToXml } from '../lib/domain-xml';
 import { setupTestEnv, TEST_VM_NAME, DISK_IMAGE } from './helpers';
@@ -14,6 +14,24 @@ describe('Hypervisor Tests', () => {
         const env = await setupTestEnv();
         connection = env.connection;
         archConfig = env.archConfig;
+    }, 10000);
+
+    beforeEach(async () => {
+        // Clean up any existing domain
+        try {
+            const existingDomain = await connection.domainLookupByName(TEST_VM_NAME);
+            if (existingDomain) {
+                const info = await connection.domainGetInfo(existingDomain);
+                if (info.state === DomainState.RUNNING) {
+                    await connection.domainShutdown(existingDomain);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+                await connection.domainUndefine(existingDomain);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        } catch (error) {
+            // Ignore errors from cleanup
+        }
     }, 10000);
 
     afterAll(async () => {
@@ -161,7 +179,7 @@ describe('Hypervisor Tests', () => {
         // Shutdown and undefine domain
         await connection.domainDestroy(domain);
         await connection.domainUndefine(domain);
-    });
+    }, 60000);
 
     it('should handle domain listing operations', async () => {
         // Test connectListDomains
@@ -245,7 +263,7 @@ describe('Hypervisor Tests', () => {
 
         // Test error handling with invalid domain ID
         await expect(connection.domainLookupByID(999999)).rejects.toThrow(LibvirtError);
-    });
+    }, 60000);
 
     it('should handle error cases with proper stack traces', async () => {
         // Test error handling with invalid XML

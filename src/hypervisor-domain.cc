@@ -699,6 +699,94 @@ Napi::Value Hypervisor::DomainShutdown(const Napi::CallbackInfo& info) {
 }
 
 /******************************************************************************
+ * DomainDestroy                                                              *
+ ******************************************************************************/
+
+class DomainDestroyWorker : public Worker {
+ public:
+    DomainDestroyWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
+
+    void Execute(void) override {
+        int destroy = virDomainDestroy(domain->domainPtr);
+        if (destroy < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+};
+
+Napi::Value Hypervisor::DomainDestroy(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainDestroyWorker* worker = new DomainDestroyWorker(
+        callback, deferred, this, domain);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainUndefine                                                             *
+ ******************************************************************************/
+
+class DomainUndefineWorker : public Worker {
+ public:
+    DomainUndefineWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
+
+    void Execute(void) override {
+        int ret = virDomainUndefine(domain->domainPtr);
+        if (ret < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+};
+
+Napi::Value Hypervisor::DomainUndefine(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainUndefineWorker* worker = new DomainUndefineWorker(
+        callback, deferred, this, domain);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
  * DomainGetXMLDesc                                                           *
  ******************************************************************************/
 

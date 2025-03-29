@@ -35,8 +35,10 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("domainSave", &Hypervisor::DomainSave),
         InstanceMethod("domainCreate", &Hypervisor::DomainCreate),
         InstanceMethod("domainShutdown", &Hypervisor::DomainShutdown),
+        InstanceMethod("domainDestroy", &Hypervisor::DomainDestroy),
         InstanceMethod("domainRestore", &Hypervisor::DomainRestore),
         InstanceMethod("domainGetXMLDesc", &Hypervisor::DomainGetXMLDesc),
+        InstanceMethod("domainUndefine", &Hypervisor::DomainUndefine),
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
     });

@@ -82,16 +82,6 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
 
-      - name: Cache Docker build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            /tmp/.buildx-cache-amd64
-            /tmp/.buildx-cache-arm64
-          key: ${{ runner.os }}-docker-buildx-${{ hashFiles('**/Dockerfile', '**/docker-compose.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-docker-buildx-
-
       - name: Create libvirt directories
         run: |
           sudo mkdir -p /var/run/libvirt
@@ -111,28 +101,20 @@ jobs:
               --platform linux/$arch \
               --target builder \
               -t libvirt-builder-$arch \
-              --cache-from type=local,src=/tmp/.buildx-cache-$arch \
-              --cache-to type=local,dest=/tmp/.buildx-cache-$arch-new \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
               --load \
               .
-            
-            # Move the new cache into place
-            rm -rf /tmp/.buildx-cache-$arch
-            mv /tmp/.buildx-cache-$arch-new /tmp/.buildx-cache-$arch
             
             # Build the test stage using the builder cache
             docker buildx build \
               --platform linux/$arch \
               --target test \
               -t libvirt-test-$arch \
-              --cache-from type=local,src=/tmp/.buildx-cache-$arch \
-              --cache-to type=local,dest=/tmp/.buildx-cache-$arch-new \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
               --load \
               .
-
-            # Move the new cache into place
-            rm -rf /tmp/.buildx-cache-$arch
-            mv /tmp/.buildx-cache-$arch-new /tmp/.buildx-cache-$arch
 
             # Run the container with necessary privileges
             docker run --rm \
@@ -144,14 +126,6 @@ jobs:
               libvirt-test-$arch \
               pnpm test:coverage
           done
-
-      - name: Save Docker build cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            /tmp/.buildx-cache-amd64
-            /tmp/.buildx-cache-arm64
-          key: ${{ runner.os }}-docker-buildx-${{ hashFiles('**/Dockerfile', '**/docker-compose.yml') }}
 
       - name: Upload test artifacts
         if: always()

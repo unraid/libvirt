@@ -172,7 +172,7 @@ export const domainDiskXml = {
 			diskDesc.device = disk.$.device;
 		}
 
-		if (disk.driver[0]) {
+		if (disk.driver && disk.driver[0]) {
 			diskDesc.driver = { };
 			if (disk.driver[0].$.name) {
 				diskDesc.driver.name = disk.driver[0].$.name;
@@ -183,14 +183,14 @@ export const domainDiskXml = {
 			}
 		}
 
-		if (disk.source[0]) {
+		if (disk.source && disk.source[0]) {
 			diskDesc.source = { };
 			if (disk.source[0].$.file) {
 				diskDesc.source.file = disk.source[0].$.file;
 			}
 		}
 
-		if (disk.target[0]) {
+		if (disk.target && disk.target[0]) {
 			diskDesc.target = { };
 			if (disk.target[0].$.dev) {
 				diskDesc.target.dev = disk.target[0].$.dev;
@@ -243,21 +243,21 @@ export const domainInterfaceXml = {
 			interfaceDesc.type = iface.$.type;
 		}
 
-		if (iface.source[0]) {
+		if (iface.source && iface.source[0]) {
 			interfaceDesc.source = { };
 			if (iface.source[0].$.network) {
 				interfaceDesc.source.network = iface.source[0].$.network;
 			}
 		}
 
-		if (iface.mac[0]) {
+		if (iface.mac && iface.mac[0]) {
 			interfaceDesc.mac = { };
 			if (iface.mac[0].$.address) {
 				interfaceDesc.mac.address = iface.mac[0].$.address;
 			}
 		}
 
-		if (iface.model[0]) {
+		if (iface.model && iface.model[0]) {
 			interfaceDesc.model = { };
 			if (iface.model[0].$.type) {
 				interfaceDesc.model.type = iface.model[0].$.type;

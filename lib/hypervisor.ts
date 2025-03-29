@@ -1,6 +1,7 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo, LibvirtError } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo } from './types.js';
 import { Domain } from './domain.js';
 import { createRequire } from 'node:module';
+import { wrapMethod } from './error.js';
 
 const require = createRequire(import.meta.url);
 
@@ -23,56 +24,11 @@ export class Hypervisor {
     }
 
     /**
-     * Handles errors from the native libvirt module by converting them to LibvirtError instances.
-     * @param error - The error to handle
-     * @throws {LibvirtError} A standardized libvirt error
-     * @private
-     */
-    private handleError(error: any): never {
-        if (error instanceof Error) {
-            // If it's already an Error instance, convert it to LibvirtError
-            const libvirtError = new LibvirtError(
-                error.message,
-                (error as any).code || -1,
-                (error as any).domain || -1,
-                (error as any).level || -1,
-                (error as any).str1,
-                (error as any).str2,
-                (error as any).str3
-            );
-            throw libvirtError;
-        }
-        // If it's a string or something else, create a generic LibvirtError
-        throw new LibvirtError(
-            error.toString(),
-            -1,
-            -1,
-            -1
-        );
-    }
-
-    /**
-     * Wraps a method call with standardized error handling.
-     * @param method - Method to call
-     * @param args - Arguments to pass to the method
-     * @returns Result of the method call
-     * @throws {LibvirtError} If an error occurs
-     * @private
-     */
-    private async wrapMethod<T>(method: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> {
-        try {
-            return await method(...args);
-        } catch (error) {
-            this.handleError(error);
-        }
-    }
-
-    /**
      * Opens a connection to the hypervisor.
      * @throws {LibvirtError} If the connection fails
      */
     async connectOpen(): Promise<void> {
-        return this.wrapMethod(this.nativeHypervisor.connectOpen.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.connectOpen.bind(this.nativeHypervisor));
     }
 
     /**
@@ -80,7 +36,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If closing the connection fails
      */
     async connectClose(): Promise<void> {
-        return this.wrapMethod(this.nativeHypervisor.connectClose.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.connectClose.bind(this.nativeHypervisor));
     }
 
     /**
@@ -90,11 +46,10 @@ export class Hypervisor {
      * @returns Array of Domain objects
      * @throws {LibvirtError} If listing domains fails
      */
-    async connectListAllDomains(flags?: ConnectListAllDomainsFlags): Promise<Domain[]> {
-        const effectiveFlags = flags ?? (ConnectListAllDomainsFlags.ACTIVE | ConnectListAllDomainsFlags.INACTIVE);
-        const nativeDomains = await this.wrapMethod<NativeDomain[]>(
+    async connectListAllDomains(flags: ConnectListAllDomainsFlags = ConnectListAllDomainsFlags.ACTIVE | ConnectListAllDomainsFlags.INACTIVE): Promise<Domain[]> {
+        const nativeDomains = await wrapMethod<NativeDomain[]>(
             this.nativeHypervisor.connectListAllDomains.bind(this.nativeHypervisor),
-            effectiveFlags
+            flags
         );
         return nativeDomains.map((d: NativeDomain) => new Domain(d, this));
     }
@@ -105,7 +60,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If listing domain IDs fails
      */
     async connectListDomains(): Promise<number[]> {
-        return this.wrapMethod(this.nativeHypervisor.connectListDomains.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.connectListDomains.bind(this.nativeHypervisor));
     }
 
     /**
@@ -114,7 +69,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If listing defined domains fails
      */
     async connectListDefinedDomains(): Promise<string[]> {
-        return this.wrapMethod(this.nativeHypervisor.connectListDefinedDomains.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.connectListDefinedDomains.bind(this.nativeHypervisor));
     }
 
     /**
@@ -124,7 +79,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If domain creation fails
      */
     async domainCreateXML(xml: string): Promise<Domain> {
-        const nativeDomain = await this.wrapMethod(
+        const nativeDomain = await wrapMethod(
             this.nativeHypervisor.domainCreateXML.bind(this.nativeHypervisor),
             xml
         );
@@ -138,7 +93,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If domain definition fails
      */
     async domainDefineXML(xml: string): Promise<Domain> {
-        const nativeDomain = await this.wrapMethod(
+        const nativeDomain = await wrapMethod(
             this.nativeHypervisor.domainDefineXML.bind(this.nativeHypervisor),
             xml
         );
@@ -152,7 +107,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If the domain is not found or lookup fails
      */
     async domainLookupByID(id: number): Promise<Domain> {
-        const nativeDomain = await this.wrapMethod(
+        const nativeDomain = await wrapMethod(
             this.nativeHypervisor.domainLookupByID.bind(this.nativeHypervisor),
             id
         );
@@ -166,7 +121,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If the domain is not found or lookup fails
      */
     async domainLookupByName(name: string): Promise<Domain> {
-        const nativeDomain = await this.wrapMethod(
+        const nativeDomain = await wrapMethod(
             this.nativeHypervisor.domainLookupByName.bind(this.nativeHypervisor),
             name
         );
@@ -180,7 +135,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If the domain is not found or lookup fails
      */
     async domainLookupByUUIDString(uuid: string): Promise<Domain> {
-        const nativeDomain = await this.wrapMethod(
+        const nativeDomain = await wrapMethod(
             this.nativeHypervisor.domainLookupByUUIDString.bind(this.nativeHypervisor),
             uuid
         );
@@ -194,7 +149,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If saving the domain state fails
      */
     async domainSave(domain: Domain, filename: string): Promise<void> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainSave.bind(this.nativeHypervisor),
             domain.getNativeDomain(),
             filename
@@ -207,7 +162,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If starting the domain fails
      */
     async domainCreate(domain: Domain): Promise<void> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainCreate.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -219,7 +174,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If shutting down the domain fails
      */
     async domainShutdown(domain: Domain): Promise<void> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainShutdown.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -231,7 +186,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If destroying the domain fails
      */
     async domainDestroy(domain: Domain): Promise<void> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainDestroy.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -243,7 +198,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If undefining the domain fails
      */
     async domainUndefine(domain: Domain): Promise<void> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainUndefine.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -256,7 +211,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If retrieving domain information fails
      */
     async domainGetInfo(domain: Domain): Promise<DomainInfo> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainGetInfo.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -269,7 +224,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If getting the domain ID fails
      */
     async domainGetID(domain: Domain): Promise<number | null> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainGetID.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -282,7 +237,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If getting the domain name fails
      */
     async domainGetName(domain: Domain): Promise<string> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainGetName.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -295,7 +250,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If getting the domain UUID fails
      */
     async domainGetUUIDString(domain: Domain): Promise<string> {
-        return this.wrapMethod(
+        return wrapMethod(
             this.nativeHypervisor.domainGetUUIDString.bind(this.nativeHypervisor),
             domain.getNativeDomain()
         );
@@ -308,8 +263,8 @@ export class Hypervisor {
      * @returns The domain's XML configuration
      * @throws {LibvirtError} If getting the domain XML fails
      */
-    async domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags): Promise<string> {
-        return this.wrapMethod(
+    async domainGetXMLDesc(domain: Domain, flags: DomainGetXMLDescFlags = DomainGetXMLDescFlags.NONE): Promise<string> {
+        return wrapMethod(
             this.nativeHypervisor.domainGetXMLDesc.bind(this.nativeHypervisor),
             domain.getNativeDomain(),
             flags
@@ -322,8 +277,8 @@ export class Hypervisor {
      * @returns The maximum number of virtual CPUs
      * @throws {LibvirtError} If getting the maximum vCPUs fails
      */
-    async connectGetMaxVcpus(type?: string): Promise<number> {
-        return this.wrapMethod(
+    async connectGetMaxVcpus(type: string = 'qemu'): Promise<number> {
+        return wrapMethod(
             this.nativeHypervisor.connectGetMaxVcpus.bind(this.nativeHypervisor),
             type
         );
@@ -335,7 +290,7 @@ export class Hypervisor {
      * @throws {LibvirtError} If getting the hostname fails
      */
     async connectGetHostname(): Promise<string> {
-        return this.wrapMethod(this.nativeHypervisor.connectGetHostname.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.connectGetHostname.bind(this.nativeHypervisor));
     }
 
     /**
@@ -344,6 +299,18 @@ export class Hypervisor {
      * @throws {LibvirtError} If getting node information fails
      */
     async nodeGetInfo(): Promise<NodeInfo> {
-        return this.wrapMethod(this.nativeHypervisor.nodeGetInfo.bind(this.nativeHypervisor));
+        return wrapMethod(this.nativeHypervisor.nodeGetInfo.bind(this.nativeHypervisor));
+    }
+
+    /**
+     * Restores a domain from a saved state file.
+     * @param filename - The file containing the saved domain state
+     * @throws {LibvirtError} If restoring the domain fails
+     */
+    async domainRestore(filename: string): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainRestore.bind(this.nativeHypervisor),
+            filename
+        );
     }
 } 

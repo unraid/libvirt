@@ -26,9 +26,9 @@
     "build/validate": "node scripts/validate-platform.js",
     "build/native": "node-gyp rebuild",
     "build/ts": "tsc --build --verbose",
-    "test": "pnpm test:unit && pnpm test:integration",
-    "test:unit": "mocha --import=tsx lib/**/*.spec.ts",
-    "test:integration": "mocha --import=tsx __tests__/integration.test.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
     "examples/list": "node examples/list.js",
     "examples/start": "node examples/start.js",
     "examples/shutdown": "node examples/shutdown.js",
@@ -68,11 +68,12 @@
   "devDependencies": {
     "@types/bindings": "^1.5.5",
     "@types/chai": "^5.0.1",
-    "@types/mocha": "^10.0.10",
     "@types/node": "^22.13.4",
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "@vitest/coverage-v8": "^1.3.1",
+    "@vitest/ui": "^1.3.1",
     "chai": "^5.2.0",
     "chalk": "^5.4.1",
     "detect-libc": "^2.0.3",
@@ -81,10 +82,10 @@
     "eslint-config-xo-typescript": "^7.0.0",
     "eslint-plugin-unicorn": "^58.0.0",
     "gts": "^6.0.2",
-    "mocha": "^11.1.0",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^1.3.1"
   },
   "os": [
     "linux",
@@ -98,8 +99,8 @@
     "node": ">=14"
   },
   "system_requirements": {
-    "linux": "libvirt-dev package (Ubuntu/Debian) or libvirt-devel package (RHEL/CentOS)",
-    "darwin": "libvirt package from Homebrew"
+    "libvirt": ">=6.0.0",
+    "qemu": ">=5.0.0"
   },
-  "packageManager": "pnpm@10.7.0"
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }

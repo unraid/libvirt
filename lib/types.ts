@@ -117,6 +117,7 @@ export enum ConnectListAllDomainsFlags {
  * Flags for getting domain XML description
  */
 export enum DomainGetXMLDescFlags {
+    NONE = 0,
     SECURE = 1,
     INACTIVE = 2,
     UPDATE_CPU = 4,
@@ -145,5 +146,14 @@ export class LibvirtError extends Error {
         this.str1 = str1;
         this.str2 = str2;
         this.str3 = str3;
+
+        // Add more context to the error message
+        if (message === 'Expected a number.') {
+            this.message = `Type error: Expected a number but received ${typeof str1 || 'undefined'}. This error typically occurs when calling libvirt methods that require numeric parameters.`;
+        }
+    }
+
+    toString(): string {
+        return `${this.name}: ${this.message} (code: ${this.code}, domain: ${this.domain}, level: ${this.level})`;
     }
 } 

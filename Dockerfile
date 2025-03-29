@@ -41,12 +41,14 @@ RUN mkdir -p /etc/libvirt && \
     echo 'unix_sock_rw_perms = "0770"' >> /etc/libvirt/libvirtd.conf && \
     echo 'auth_unix_rw = "none"' >> /etc/libvirt/libvirtd.conf
 
-# Switch to non-root user
-USER libvirt
-
 # Create necessary directories with correct permissions
 RUN mkdir -p /home/libvirt/.config/libvirt && \
-    echo 'uri_default = "qemu:///session"' > /home/libvirt/.config/libvirt/libvirt.conf
+    echo 'uri_default = "qemu:///session"' > /home/libvirt/.config/libvirt/libvirt.conf && \
+    chown -R libvirt:libvirt /home/libvirt/.config && \
+    chown -R libvirt:libvirt /app
+
+# Switch to non-root user
+USER libvirt
 
 # Start libvirtd and run tests
 CMD ["/bin/sh", "-c", "/usr/sbin/libvirtd --daemon && sleep 2 && npm test"]

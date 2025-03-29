@@ -39,7 +39,7 @@ jobs:
       - name: Cache APT Packages
         uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
-          packages: libvirt-dev qemu-system
+          packages: libvirt-dev qemu-system qemu-user-static
           version: 1.0
 
       - name: Set Node.js
@@ -72,8 +72,55 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Run Unit Tests
-        run: pnpm run test:unit
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
+
+      - name: Create libvirt directories
+        run: |
+          sudo mkdir -p /var/run/libvirt
+          sudo mkdir -p /var/lib/libvirt
+          sudo chmod -R 777 /var/run/libvirt
+          sudo chmod -R 777 /var/lib/libvirt
+
+      - name: Run Docker Integration Tests
+        run: |
+          # Create test artifacts directory
+          mkdir -p test-artifacts
+          
+          # Build and test for each architecture
+          for arch in amd64 arm64; do
+            # Build the Docker image
+            docker buildx build \
+              --platform linux/$arch \
+              --build-arg BASE_IMAGE=node:20-slim \
+              -t libvirt-test-$arch \
+              --load \
+              .
+
+            # Run the container with necessary privileges
+            docker run --rm \
+              --platform linux/$arch \
+              --privileged \
+              -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
+              -v /var/lib/libvirt:/var/lib/libvirt \
+              -v $(pwd)/test-artifacts:/app/test-artifacts \
+              libvirt-test-$arch
+          done
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: test-artifacts/
+          retention-days: 7
 
       - name: Setup NPM Authentication
         if: ${{ needs.release-please.outputs.release_created }}

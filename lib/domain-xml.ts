@@ -52,6 +52,33 @@ export const domainOsXml = {
 						} : {})
 					}
 				}
+			} : {}),
+			...(osDesc.loader ? {
+				loader: Array.isArray(osDesc.loader) ? osDesc.loader.map(loader => ({
+					$: {
+						...(loader.readonly ? {
+							readonly: loader.readonly
+						} : {}),
+						...(loader.type ? {
+							type: loader.type
+						} : {})
+					},
+					...(loader.value ? {
+						_: loader.value
+					} : {})
+				})) : [{
+					$: {
+						...(osDesc.loader.readonly ? {
+							readonly: osDesc.loader.readonly
+						} : {}),
+						...(osDesc.loader.type ? {
+							type: osDesc.loader.type
+						} : {})
+					},
+					...(osDesc.loader.value ? {
+						_: osDesc.loader.value
+					} : {})
+				}]
 			} : {})
 		};
 	},
@@ -59,7 +86,7 @@ export const domainOsXml = {
 	deserialize(os: any): DomainOsDesc {
 		const osDesc: DomainOsDesc = { };
 
-		if (os.type[0]) {
+		if (os.type?.[0]) {
 			osDesc.type = { };
 			if (os.type[0].$.arch) {
 				osDesc.type.arch = os.type[0].$.arch;
@@ -74,10 +101,25 @@ export const domainOsXml = {
 			}
 		}
 
-		if (os.boot[0]) {
+		if (os.boot?.[0]) {
 			osDesc.boot = { };
 			if (os.boot[0].$.dev) {
 				osDesc.boot.dev = os.boot[0].$.dev;
+			}
+		}
+
+		if (os.loader?.[0]) {
+			osDesc.loader = { };
+			if (os.loader[0].$.readonly) {
+				osDesc.loader.readonly = os.loader[0].$.readonly;
+			}
+
+			if (os.loader[0].$.type) {
+				osDesc.loader.type = os.loader[0].$.type;
+			}
+
+			if (os.loader[0]._) {
+				osDesc.loader.value = os.loader[0]._;
 			}
 		}
 

@@ -21,3 +21,9 @@ export * from './domain-desc.js';
 export * from './domain-xml.js';
 // Contains a builder class to construct domain descriptions.
 export * from './domain-builder.js';
+
+export * from './types.js';
+export * from './domain-desc.js';
+export * from './domain-xml.js';
+export * from './domain-builder.js';
+export * from './get-bindings.js';

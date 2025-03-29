@@ -39,8 +39,14 @@ jobs:
       - name: Cache APT Packages
         uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
-          packages: libvirt-dev
+          packages: libvirt-dev qemu-system
           version: 1.0
+
+      - name: Install libvirt and QEMU
+        run: |
+          sudo systemctl start libvirtd
+          sudo usermod -a -G libvirt $USER
+          sudo chmod 666 /var/run/libvirt/libvirt-sock
 
       - name: Set Node.js
         uses: actions/setup-node@v4

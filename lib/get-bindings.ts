@@ -8,7 +8,7 @@
  */
 import { createRequire } from "node:module";
 import type {
-  HypervisorConstructor,
+  HypervisorClass,
   DomainConstructor,
 } from "./types.js";
 
@@ -16,7 +16,7 @@ const require = createRequire(import.meta.url);
 
 // Define the native module interface
 interface NativeLibvirt {
-  Hypervisor: HypervisorConstructor;
+  Hypervisor: HypervisorClass;
   Domain: DomainConstructor;
 }
 

@@ -25,6 +25,24 @@ export declare interface DomainOsDesc {
 	boot?: {
 		dev?: string;
 	};
+
+	firmware?: 'efi' | 'bios';
+
+	loader?: {
+		readonly?: string;
+		type?: string;
+		value?: string;
+	} | Array<{
+		readonly?: string;
+		type?: string;
+		value?: string;
+	}>;
+
+	nvram?: {
+		template?: string;
+		value?: string;
+		format?: string;
+	};
 }
 
 /**
@@ -84,7 +102,7 @@ export declare interface DomainGraphicsDesc {
  * @todo Interface is not complete nor 100% correct.
  */
 export declare interface DomainDesc {
-	type?: 'kvm';
+	type?: 'kvm' | 'qemu';
 	id?: number;
 
 	name?: string;

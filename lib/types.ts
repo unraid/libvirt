@@ -1,5 +1,47 @@
+/**
+ * Options for creating a new Hypervisor instance
+ */
 export interface HypervisorOptions {
     uri: string;
+}
+
+/**
+ * Interface defining the methods available on a Hypervisor instance
+ * This is the public API that users interact with
+ */
+export interface Hypervisor {
+    connectOpen(): Promise<void>;
+    connectClose(): Promise<void>;
+    connectListAllDomains(flags?: ConnectListAllDomainsFlags): Promise<Domain[]>;
+    connectListDomains(): Promise<number[]>;
+    connectListDefinedDomains(): Promise<string[]>;
+    connectGetMaxVcpus(type?: string): Promise<number>;
+    connectGetHostname(): Promise<string>;
+
+    domainCreateXML(xml: string): Promise<Domain>;
+    domainDefineXML(xml: string): Promise<Domain>;
+    domainGetInfo(domain: Domain): Promise<DomainInfo>;
+    domainGetID(domain: Domain): Promise<number | null>;
+    domainGetName(domain: Domain): Promise<string>;
+    domainGetUUIDString(domain: Domain): Promise<string>;
+    domainLookupByID(id: number): Promise<Domain>;
+    domainLookupByName(name: string): Promise<Domain>;
+    domainLookupByUUIDString(uuid: string): Promise<Domain>;
+    domainSave(domain: Domain, filename: string): Promise<void>;
+    domainRestore(filename: string): Promise<void>;
+    domainCreate(domain: Domain): Promise<void>;
+    domainShutdown(domain: Domain): Promise<void>;
+    domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags): Promise<string>;
+
+    nodeGetInfo(): Promise<NodeInfo>;
+}
+
+/**
+ * Interface defining the constructor for creating new Hypervisor instances
+ * This is used by the native module to create new Hypervisor objects
+ */
+export interface HypervisorClass {
+    new (options: HypervisorOptions): Hypervisor;
 }
 
 export interface DomainInfo {
@@ -90,68 +132,7 @@ export enum DomainGetXMLDescFlags {
     MIGRATABLE = 8
 }
 
-export interface Hypervisor {
-    connectOpen(): Promise<void>;
-    connectClose(): Promise<void>;
-    connectListAllDomains(flags?: ConnectListAllDomainsFlags): Promise<Domain[]>;
-    connectListDomains(): Promise<number[]>;
-    connectListDefinedDomains(): Promise<string[]>;
-    connectGetMaxVcpus(type?: string): Promise<number>;
-    connectGetHostname(): Promise<string>;
-
-    domainCreateXML(xml: string): Promise<Domain>;
-    domainDefineXML(xml: string): Promise<Domain>;
-    domainGetInfo(domain: Domain): Promise<DomainInfo>;
-    domainGetID(domain: Domain): Promise<number | null>;
-    domainGetName(domain: Domain): Promise<string>;
-    domainGetUUIDString(domain: Domain): Promise<string>;
-    domainLookupByID(id: number): Promise<Domain>;
-    domainLookupByName(name: string): Promise<Domain>;
-    domainLookupByUUIDString(uuid: string): Promise<Domain>;
-    domainSave(domain: Domain, filename: string): Promise<void>;
-    domainRestore(filename: string): Promise<void>;
-    domainCreate(domain: Domain): Promise<void>;
-    domainShutdown(domain: Domain): Promise<void>;
-    domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags): Promise<string>;
-
-    nodeGetInfo(): Promise<NodeInfo>;
-}
-
-export interface Domain {
-    isActive(): Promise<boolean>;
-    isPersistent(): Promise<boolean>;
-    isUpdated(): Promise<boolean>;
-    
-    suspend(): Promise<void>;
-    resume(): Promise<void>;
-    shutdown(): Promise<void>;
-    reboot(flags?: DomainRebootFlags): Promise<void>;
-    reset(): Promise<void>;
-    
-    getState(): Promise<DomainState>;
-    getMaxMemory(): Promise<number>;
-    setMaxMemory(memory: number): Promise<void>;
-    getMemory(): Promise<number>;
-    setMemory(memory: number): Promise<void>;
-    getMaxVcpus(): Promise<number>;
-    setVcpus(vcpus: number): Promise<void>;
-    getVcpus(): Promise<number>;
-    
-    getXMLDesc(flags?: DomainGetXMLDescFlags): Promise<string>;
-    defineXML(xml: string): Promise<void>;
-    
-    hasCurrentSnapshot(): Promise<boolean>;
-    hasSnapshot(): Promise<boolean>;
-    
-    getBlockInfo(device: string): Promise<DomainBlockInfo>;
-    getBlockDevices(): Promise<string[]>;
-    
-    getInterfaceAddresses(source?: DomainInterfaceAddressesSource): Promise<DomainInterfaceInfo[]>;
-}
-
-export interface HypervisorConstructor {
-    new (options: HypervisorOptions): Hypervisor;
-}
+export interface Domain {}
 
 export interface DomainConstructor {
     new (): Domain;

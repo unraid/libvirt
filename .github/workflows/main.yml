@@ -111,7 +111,8 @@ jobs:
               -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
               -v /var/lib/libvirt:/var/lib/libvirt \
               -v $(pwd)/test-artifacts:/app/test-artifacts \
-              libvirt-test-$arch
+              libvirt-test-$arch \
+              pnpm test:coverage
           done
 
       - name: Upload test artifacts
@@ -120,6 +121,14 @@ jobs:
         with:
           name: test-artifacts
           path: test-artifacts/
+          retention-days: 7
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/
           retention-days: 7
 
       - name: Setup NPM Authentication

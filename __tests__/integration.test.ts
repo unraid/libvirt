@@ -3,7 +3,6 @@ import { Hypervisor, Domain, DomainState } from '../lib';
 import { domainDescToXml } from '../lib/domain-xml';
 import { DomainDesc } from '../lib/domain-desc';
 import { HypervisorOptions, Hypervisor as HypervisorType, Domain as DomainType } from '../lib/types';
-import { arch as osArch, platform } from 'os';
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
 

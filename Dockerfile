@@ -1,10 +1,40 @@
-# Use Node.js as base image
-FROM node:20-slim
+# Build stage
+FROM node:20-slim AS builder
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install only the essential QEMU and libvirt packages
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3 \
+    libvirt-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up the build environment
+WORKDIR /app
+
+# Copy package files first to leverage caching
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+# Install pnpm and dependencies
+RUN npm install -g pnpm && \
+    pnpm install --frozen-lockfile
+
+# Copy source files
+COPY . .
+
+# Build the project
+RUN pnpm run build
+
+# Test stage
+FROM node:20-slim AS test
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install test dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3 \
@@ -27,13 +57,19 @@ RUN useradd -m -s /bin/bash -g libvirt libvirt && \
 
 # Set up the test environment
 WORKDIR /app
-COPY . .
 
-# Install pnpm
-RUN npm install -g pnpm
+# Copy package files and install all dependencies (including dev)
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+RUN npm install -g pnpm && \
+    pnpm install --frozen-lockfile
 
-# Install dependencies and build
-RUN npm install && npm run build
+# Copy built files and test files from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/__tests__ ./__tests__
+COPY --from=builder /app/vitest.config.ts ./vitest.config.ts
+COPY --from=builder /app/build ./build
 
 # Set up libvirt configuration
 RUN mkdir -p /etc/libvirt && \
@@ -51,4 +87,4 @@ RUN mkdir -p /home/libvirt/.config/libvirt && \
 USER libvirt
 
 # Start libvirtd and run tests
-CMD ["/bin/sh", "-c", "/usr/sbin/libvirtd --daemon && sleep 2 && npm test"]
+CMD ["/bin/sh", "-c", "/usr/sbin/libvirtd --daemon && sleep 2 && pnpm test"]

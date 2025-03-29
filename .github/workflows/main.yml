@@ -96,11 +96,23 @@ jobs:
           
           # Build and test for each architecture
           for arch in amd64 arm64; do
-            # Build the Docker image
+            # Build the builder stage first
             docker buildx build \
               --platform linux/$arch \
-              --build-arg BASE_IMAGE=node:20-slim \
+              --target builder \
+              -t libvirt-builder-$arch \
+              --cache-from libvirt-builder-$arch \
+              --cache-to libvirt-builder-$arch \
+              --load \
+              .
+            
+            # Build the test stage using the builder cache
+            docker buildx build \
+              --platform linux/$arch \
+              --target test \
               -t libvirt-test-$arch \
+              --cache-from libvirt-test-$arch \
+              --cache-to libvirt-test-$arch \
               --load \
               .
 

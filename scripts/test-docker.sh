@@ -16,15 +16,39 @@ NC='\033[0m' # No Color
 run_tests() {
     local arch=$1
     local tag="libvirt-test-${arch}"
+    local builder_tag="libvirt-builder-${arch}"
     
     echo -e "${GREEN}Running tests on node:20-slim (${arch})${NC}"
     
-    # Build the Docker image for the specific architecture
-    docker buildx build \
+    # Try to build with caching first
+    if docker buildx build \
         --platform linux/$arch \
-        -t $tag \
+        --target builder \
+        -t $builder_tag \
+        --cache-from $builder_tag \
+        --cache-to $builder_tag \
         --load \
-        .
+        . 2>/dev/null; then
+        
+        # If caching worked, build test stage with cache
+        docker buildx build \
+            --platform linux/$arch \
+            --target test \
+            -t $tag \
+            --cache-from $tag \
+            --cache-to $tag \
+            --load \
+            .
+    else
+        echo -e "${YELLOW}Caching not supported by Docker driver, using simple build${NC}"
+        # Fall back to simple multi-stage build without caching
+        docker buildx build \
+            --platform linux/$arch \
+            --target test \
+            -t $tag \
+            --load \
+            .
+    fi
     
     # Run the container with necessary privileges
     docker run --rm \

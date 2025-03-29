@@ -8,18 +8,34 @@ export const DISK_IMAGE = '/tmp/test-vm.img';
 
 // Determine architecture-specific configuration
 export function getArchConfig(): { arch: string; machine: string; firmware?: { code: string; vars: string }; emulator: string } {
+    // Check for QEMU in Homebrew path on macOS
+    const homebrewQemuPath = process.platform === 'darwin' ? '/opt/homebrew/bin' : null;
+    const systemQemuPath = '/usr/bin';
+    
+    // Function to find QEMU binary
+    const findQemuBinary = (arch: string): string => {
+        const binaryName = `qemu-system-${arch}`;
+        if (homebrewQemuPath && existsSync(`${homebrewQemuPath}/${binaryName}`)) {
+            return `${homebrewQemuPath}/${binaryName}`;
+        }
+        if (existsSync(`${systemQemuPath}/${binaryName}`)) {
+            return `${systemQemuPath}/${binaryName}`;
+        }
+        throw new Error(`QEMU binary ${binaryName} not found in ${homebrewQemuPath} or ${systemQemuPath}`);
+    };
+
     if (process.platform === 'darwin') {
         if (process.arch === 'arm64') {
             return {
                 arch: 'aarch64',
                 machine: 'virt',
-                emulator: '/usr/bin/qemu-system-aarch64'
+                emulator: findQemuBinary('aarch64')
             };
         } else {
             return {
                 arch: 'x86_64',
                 machine: 'q35',
-                emulator: '/usr/bin/qemu-system-x86_64'
+                emulator: findQemuBinary('x86_64')
             };
         }
     } else {
@@ -27,13 +43,13 @@ export function getArchConfig(): { arch: string; machine: string; firmware?: { c
             return {
                 arch: 'aarch64',
                 machine: 'virt',
-                emulator: '/usr/bin/qemu-system-aarch64'
+                emulator: findQemuBinary('aarch64')
             };
         } else {
             return {
                 arch: 'x86_64',
                 machine: 'q35',
-                emulator: '/usr/bin/qemu-system-x86_64'
+                emulator: findQemuBinary('x86_64')
             };
         }
     }
@@ -47,7 +63,16 @@ export const verifyQemuInstallation = () => {
     const firmwareVarsPath = archConfig.firmware?.vars;
 
     if (!existsSync(qemuPath)) {
-        throw new Error(`QEMU not found at ${qemuPath}. Please install QEMU first.`);
+        const homebrewPath = process.platform === 'darwin' ? '/opt/homebrew/bin' : null;
+        const systemPath = '/usr/bin';
+        const errorMessage = process.platform === 'darwin' 
+            ? `QEMU not found. Please install it using Homebrew:\n` +
+              `  brew install qemu\n\n` +
+              `Expected paths checked:\n` +
+              `  ${homebrewPath}/qemu-system-${archConfig.arch}\n` +
+              `  ${systemPath}/qemu-system-${archConfig.arch}`
+            : `QEMU not found at ${qemuPath}. Please install QEMU first.`;
+        throw new Error(errorMessage);
     }
 
     if (firmwareCodePath && !existsSync(firmwareCodePath)) {

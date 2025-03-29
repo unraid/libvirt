@@ -275,10 +275,10 @@ describe('Integration Tests', () => {
             expect(info.maxMem).to.equal(512 * 1024);
             expect(info.nrVirtCpu).to.equal(1);
 
-            // Try graceful shutdown first (we know it won't work without an OS)
+            // Try graceful shutdown first (we know it won't work without OS)
             console.log('Attempting graceful shutdown (expected to fail without OS)...');
             try {
-                execSync(`virsh -c qemu:///session shutdown ${TEST_VM_NAME}`);
+                await connection.domainShutdown(domain);
                 await new Promise(resolve => setTimeout(resolve, 1000));
             } catch (error) {
                 console.log('Graceful shutdown failed as expected (no OS installed)');
@@ -287,10 +287,11 @@ describe('Integration Tests', () => {
             // Now perform force shutdown
             console.log('Performing force shutdown...');
             try {
-                execSync(`virsh -c qemu:///session destroy ${TEST_VM_NAME}`);
+                await connection.domainDestroy(domain);
                 await new Promise(resolve => setTimeout(resolve, 2000));
             } catch (error) {
                 console.error('Error during force shutdown:', error);
+                throw error;
             }
 
             // Verify the domain is shut down

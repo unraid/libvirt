@@ -66,6 +66,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     Napi::Value DomainSave(const Napi::CallbackInfo& info);
     Napi::Value DomainCreate(const Napi::CallbackInfo& info);
     Napi::Value DomainShutdown(const Napi::CallbackInfo& info);
+    Napi::Value DomainDestroy(const Napi::CallbackInfo& info);
     Napi::Value DomainRestore(const Napi::CallbackInfo& info);
     Napi::Value DomainGetXMLDesc(const Napi::CallbackInfo& info);
 

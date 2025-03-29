@@ -31,6 +31,7 @@ export interface Hypervisor {
     domainRestore(filename: string): Promise<void>;
     domainCreate(domain: Domain): Promise<void>;
     domainShutdown(domain: Domain): Promise<void>;
+    domainDestroy(domain: Domain): Promise<void>;
     domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags): Promise<string>;
 
     nodeGetInfo(): Promise<NodeInfo>;

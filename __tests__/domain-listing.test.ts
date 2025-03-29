@@ -91,12 +91,12 @@ describe('Domain Listing and Querying Tests', () => {
         domain = await connection.domainDefineXML(xml);
 
         // Test listing active domains (should be empty initially)
-        const activeDomains = await connection.connectListAllDomains(1 as ConnectListAllDomainsFlags);
+        const activeDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.ACTIVE);
         expect(Array.isArray(activeDomains)).toBe(true);
         expect(activeDomains.length).toBe(0);
 
         // Test listing inactive domains (should include our defined domain)
-        const inactiveDomains = await connection.connectListAllDomains(2 as ConnectListAllDomainsFlags);
+        const inactiveDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.INACTIVE);
         expect(Array.isArray(inactiveDomains)).toBe(true);
         expect(inactiveDomains.length).toBeGreaterThan(0);
         const inactiveNames = await Promise.all(inactiveDomains.map(d => d.getName()));
@@ -106,20 +106,20 @@ describe('Domain Listing and Querying Tests', () => {
         await connection.domainCreate(domain);
 
         // Test listing running domains
-        const runningDomains = await connection.connectListAllDomains(16 as ConnectListAllDomainsFlags);
+        const runningDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.RUNNING);
         expect(Array.isArray(runningDomains)).toBe(true);
         expect(runningDomains.length).toBeGreaterThan(0);
         const runningNames = await Promise.all(runningDomains.map(d => d.getName()));
         expect(runningNames).toContain(TEST_VM_NAME);
 
         // Test listing persistent domains
-        const persistentDomains = await connection.connectListAllDomains(4 as ConnectListAllDomainsFlags);
+        const persistentDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.PERSISTENT);
         expect(Array.isArray(persistentDomains)).toBe(true);
         const persistentNames = await Promise.all(persistentDomains.map(d => d.getName()));
         expect(persistentNames).toContain(TEST_VM_NAME);
 
         // Test listing transient domains
-        const transientDomains = await connection.connectListAllDomains(8 as ConnectListAllDomainsFlags);
+        const transientDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.TRANSIENT);
         expect(Array.isArray(transientDomains)).toBe(true);
         const transientNames = await Promise.all(transientDomains.map(d => d.getName()));
         expect(transientNames).not.toContain(TEST_VM_NAME);

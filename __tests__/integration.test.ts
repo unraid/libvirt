@@ -2,13 +2,14 @@ import { expect } from 'chai';
 import { Hypervisor, Domain, DomainState } from '../lib';
 import { domainDescToXml } from '../lib/domain-xml';
 import { DomainDesc } from '../lib/domain-desc';
-import { HypervisorOptions, Hypervisor as HypervisorType, Domain as DomainType } from '../lib/types';
+import { HypervisorOptions } from '../lib/types';
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
+import { LibvirtError } from '../lib/types.js';
 
 describe('Integration Tests', () => {
-    let connection: HypervisorType;
-    let domain: DomainType | null = null;
+    let connection: Hypervisor;
+    let domain: Domain | null = null;
     const TEST_VM_NAME = 'test-integration-vm';
     const DISK_IMAGE = '/tmp/test-vm.img';
 
@@ -94,52 +95,73 @@ describe('Integration Tests', () => {
     // Clean up domain if it exists
     const cleanupDomain = async () => {
         try {
-            // First check if domain exists without generating error output
-            const domains = await connection.connectListDefinedDomains();
-            if (domains.includes(TEST_VM_NAME)) {
+            console.log('Starting domain cleanup...');
+            
+            // Check both defined and active domains
+            const definedDomains = await connection.connectListDefinedDomains();
+            const activeDomainIds = await connection.connectListDomains();
+            console.log('Defined domains:', definedDomains);
+            console.log('Active domain IDs:', activeDomainIds);
+
+            // Check if domain exists in either list
+            if (definedDomains.includes(TEST_VM_NAME) || activeDomainIds.length > 0) {
+                console.log(`Found existing domain ${TEST_VM_NAME}, attempting cleanup...`);
                 try {
                     const existingDomain = await connection.domainLookupByName(TEST_VM_NAME);
                     if (existingDomain) {
                         try {
-                            const info = await connection.domainGetInfo(existingDomain);
+                            const info = await existingDomain.getInfo();
+                            console.log('Domain state:', info.state);
                             if (info.state === DomainState.RUNNING) {
                                 // Try graceful shutdown first
                                 try {
-                                    execSync(`virsh -c qemu:///session shutdown ${TEST_VM_NAME}`);
-                                    await new Promise(resolve => setTimeout(resolve, 1000));
+                                    console.log('Attempting graceful shutdown...');
+                                    await existingDomain.shutdown();
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
                                 } catch (error) {
-                                    // Ignore errors during shutdown
+                                    console.log('Graceful shutdown failed:', error instanceof Error ? error.message : error);
                                 }
                                 // Force shutdown if still running
                                 try {
-                                    execSync(`virsh -c qemu:///session destroy ${TEST_VM_NAME}`);
-                                    await new Promise(resolve => setTimeout(resolve, 1000));
+                                    console.log('Attempting force shutdown...');
+                                    await existingDomain.destroy();
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
                                 } catch (error) {
-                                    // Ignore errors during force shutdown
+                                    console.log('Force shutdown failed:', error instanceof Error ? error.message : error);
                                 }
                             }
                         } catch (error) {
-                            // Ignore errors during info check
+                            console.log('Error getting domain info:', error instanceof Error ? error.message : error);
                         }
                     }
                 } catch (error) {
-                    // Ignore errors if domain doesn't exist
+                    console.log('Error looking up domain:', error instanceof Error ? error.message : error);
                 }
 
                 // Now try to undefine the domain
                 try {
-                    execSync(`virsh -c qemu:///session undefine ${TEST_VM_NAME}`);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    console.log('Attempting to undefine domain...');
+                    const domain = await connection.domainLookupByName(TEST_VM_NAME);
+                    if (domain) {
+                        await connection.domainUndefine(domain);
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        console.log('Domain undefined successfully');
+                    }
                 } catch (error) {
-                    // Ignore errors during undefine
+                    console.log('Error during undefine:', error instanceof Error ? error.message : error);
                 }
+            } else {
+                console.log('No existing domain found to clean up');
             }
         } catch (error) {
-            // Ignore errors during cleanup
+            console.error('Error during domain cleanup:', error instanceof Error ? error.message : error);
         }
     };
 
-    before(async () => {
+    before(async function() {
+        // Increase timeout for the before hook
+        this.timeout(10000);
+
         try {
             // Clean up disk image first
             cleanupDiskImage();
@@ -305,6 +327,123 @@ describe('Integration Tests', () => {
         } finally {
             // Clear the domain reference before cleanup
             domain = null;
+        }
+    });
+
+    it('should allow undefining a domain through the domain object', async function() {
+        this.timeout(30000);
+
+        // Clean up any existing domain first
+        await cleanupDomain();
+        
+        const archConfig = getArchConfig();
+
+        // Create a minimal VM configuration
+        const domainDesc: DomainDesc = {
+            type: 'qemu',
+            name: TEST_VM_NAME,
+            memory: { value: 512 * 1024 },
+            vcpu: { value: 1 },
+            os: {
+                type: { 
+                    arch: archConfig.arch,
+                    machine: archConfig.machine,
+                    value: 'hvm'
+                },
+                boot: { dev: 'hd' }
+            },
+            devices: [
+                {
+                    type: 'emulator',
+                    emulator: {
+                        value: archConfig.emulator
+                    }
+                }
+            ]
+        };
+
+        // Convert domain description to XML and define the domain
+        const xml = domainDescToXml(domainDesc);
+        domain = await connection.domainDefineXML(xml);
+        expect(domain).to.not.be.null;
+
+        // Verify the domain exists
+        const definedDomains = await connection.connectListDefinedDomains();
+        expect(definedDomains).to.include(TEST_VM_NAME);
+
+        // Undefine using the domain object method
+        await domain.undefine();
+
+        // Verify the domain no longer exists
+        const remainingDomains = await connection.connectListDefinedDomains();
+        expect(remainingDomains).to.not.include(TEST_VM_NAME);
+    });
+
+    it('should allow undefining a domain through the hypervisor', async function() {
+        this.timeout(30000);
+
+        // Clean up any existing domain first
+        await cleanupDomain();
+        
+        const archConfig = getArchConfig();
+
+        // Create a minimal VM configuration
+        const domainDesc: DomainDesc = {
+            type: 'qemu',
+            name: TEST_VM_NAME,
+            memory: { value: 512 * 1024 },
+            vcpu: { value: 1 },
+            os: {
+                type: { 
+                    arch: archConfig.arch,
+                    machine: archConfig.machine,
+                    value: 'hvm'
+                },
+                boot: { dev: 'hd' }
+            },
+            devices: [
+                {
+                    type: 'emulator',
+                    emulator: {
+                        value: archConfig.emulator
+                    }
+                }
+            ]
+        };
+
+        // Convert domain description to XML and define the domain
+        const xml = domainDescToXml(domainDesc);
+        domain = await connection.domainDefineXML(xml);
+        expect(domain).to.not.be.null;
+
+        // Verify the domain exists
+        const definedDomains = await connection.connectListDefinedDomains();
+        expect(definedDomains).to.include(TEST_VM_NAME);
+
+        // Undefine using the hypervisor method
+        await connection.domainUndefine(domain);
+
+        // Verify the domain no longer exists
+        const remainingDomains = await connection.connectListDefinedDomains();
+        expect(remainingDomains).to.not.include(TEST_VM_NAME);
+    });
+
+    it('should handle errors when trying to undefine a non-existent domain', async function() {
+        this.timeout(30000);
+
+        // Clean up any existing domain first
+        await cleanupDomain();
+
+        try {
+            const domain = await connection.domainLookupByName('non-existent-domain');
+            await domain.undefine();
+            // If we get here, the undefine succeeded unexpectedly
+            expect.fail('Expected domain operations to throw an error');
+        } catch (error) {
+            expect(error).to.be.instanceOf(LibvirtError);
+            expect(error.message).to.match(/Domain not found: no domain with matching name 'non-existent-domain'/);
+            expect(error.code).to.be.a('number');
+            expect(error.domain).to.be.a('number');
         }
     });
 }); 

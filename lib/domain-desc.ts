@@ -15,7 +15,7 @@
  * @see https://www.libvirt.org/formatdomain.html#elementsOS
  * @todo Interface is not complete nor 100% correct.
  */
-export declare interface DomainOsDesc {
+export interface DomainOsDesc {
 	type?: {
 		arch?: string;
 		machine?: string;
@@ -49,7 +49,7 @@ export declare interface DomainOsDesc {
  * @see https://www.libvirt.org/formatdomain.html#elementsDisks
  * @todo Interface is not complete nor 100% correct.
  */
-export declare interface DomainDiskDesc {
+export interface DomainDiskDesc {
 	type?: 'file';
 	device?: 'disk';
 
@@ -66,14 +66,13 @@ export declare interface DomainDiskDesc {
 		dev?: string;
 		bus?: 'virtio';
 	};
-
 }
 
 /**
  * @see https://www.libvirt.org/formatdomain.html#elementsNICS
  * @todo Interface is not complete nor 100% correct.
  */
-export declare interface DomainInterfaceDesc {
+export interface DomainInterfaceDesc {
 	type?: 'network';
 	source?: {
 		network?: string;
@@ -90,7 +89,7 @@ export declare interface DomainInterfaceDesc {
  * @see https://www.libvirt.org/formatdomain.html#elementsGraphics
  * @todo Interface is not complete nor 100% correct.
  */
-export declare interface DomainGraphicsDesc {
+export interface DomainGraphicsDesc {
 	type?: 'vnc';
 	port?: number;
 	listen?: string;
@@ -101,7 +100,7 @@ export declare interface DomainGraphicsDesc {
  * @see https://www.libvirt.org/formatdomain.html
  * @todo Interface is not complete nor 100% correct.
  */
-export declare interface DomainDesc {
+export interface DomainDesc {
 	type?: 'kvm' | 'qemu';
 	id?: number;
 

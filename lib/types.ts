@@ -60,78 +60,68 @@ export interface DomainInterfaceAddress {
 /**
  * Possible states a domain can be in
  */
-export const DomainState = {
-    NOSTATE: 0,
-    RUNNING: 1,
-    BLOCKED: 2,
-    PAUSED: 3,
-    SHUTDOWN: 4,
-    SHUTOFF: 5,
-    CRASHED: 6,
-    PMSUSPENDED: 7,
-} as const;
-
-export type DomainState = typeof DomainState[keyof typeof DomainState];
+export enum DomainState {
+    NOSTATE = 0,
+    RUNNING = 1,
+    BLOCKED = 2,
+    PAUSED = 3,
+    SHUTDOWN = 4,
+    SHUTOFF = 5,
+    CRASHED = 6,
+    PMSUSPENDED = 7
+}
 
 /**
  * Flags for domain reboot operations
  */
-export const DomainRebootFlags = {
-    NONE: 0,
-    ACPI: 1,
-    GUEST_AGENT: 2,
-    INIT: 4,
-    SIGNAL: 8,
-} as const;
-
-export type DomainRebootFlags = typeof DomainRebootFlags[keyof typeof DomainRebootFlags];
+export enum DomainRebootFlags {
+    NONE = 0,
+    ACPI = 1,
+    GUEST_AGENT = 2,
+    INIT = 4,
+    SIGNAL = 8
+}
 
 /**
  * Sources for domain interface addresses
  */
-export const DomainInterfaceAddressesSource = {
-    LEASE: 0,
-    AGENT: 1,
-    ARP: 2,
-} as const;
-
-export type DomainInterfaceAddressesSource = typeof DomainInterfaceAddressesSource[keyof typeof DomainInterfaceAddressesSource];
+export enum DomainInterfaceAddressesSource {
+    LEASE = 0,
+    AGENT = 1,
+    ARP = 2
+}
 
 /**
  * Flags for listing domains
  */
-export const ConnectListAllDomainsFlags = {
-    ACTIVE: 1,
-    INACTIVE: 2,
-    PERSISTENT: 4,
-    TRANSIENT: 8,
-    RUNNING: 16,
-    PAUSED: 32,
-    SHUTOFF: 64,
-    OTHER: 128,
-    MANAGEDSAVE: 256,
-    NO_MANAGEDSAVE: 512,
-    AUTOSTART: 1024,
-    NO_AUTOSTART: 2048,
-    HAS_SNAPSHOT: 4096,
-    NO_SNAPSHOT: 8192,
-    HAS_CHECKPOINT: 16384,
-    NO_CHECKPOINT: 32768,
-} as const;
-
-export type ConnectListAllDomainsFlags = typeof ConnectListAllDomainsFlags[keyof typeof ConnectListAllDomainsFlags];
+export enum ConnectListAllDomainsFlags {
+    ACTIVE = 1,
+    INACTIVE = 2,
+    PERSISTENT = 4,
+    TRANSIENT = 8,
+    RUNNING = 16,
+    PAUSED = 32,
+    SHUTOFF = 64,
+    OTHER = 128,
+    MANAGEDSAVE = 256,
+    NO_MANAGEDSAVE = 512,
+    AUTOSTART = 1024,
+    NO_AUTOSTART = 2048,
+    HAS_SNAPSHOT = 4096,
+    NO_SNAPSHOT = 8192,
+    HAS_CHECKPOINT = 16384,
+    NO_CHECKPOINT = 32768
+}
 
 /**
  * Flags for getting domain XML description
  */
-export const DomainGetXMLDescFlags = {
-    SECURE: 1,
-    INACTIVE: 2,
-    UPDATE_CPU: 4,
-    MIGRATABLE: 8,
-} as const;
-
-export type DomainGetXMLDescFlags = typeof DomainGetXMLDescFlags[keyof typeof DomainGetXMLDescFlags];
+export enum DomainGetXMLDescFlags {
+    SECURE = 1,
+    INACTIVE = 2,
+    UPDATE_CPU = 4,
+    MIGRATABLE = 8
+}
 
 /**
  * Marker type for the native domain object

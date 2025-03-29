@@ -6,6 +6,7 @@ import { HypervisorOptions } from '../lib/types';
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
 import { LibvirtError } from '../lib/types.js';
+import { ConnectListAllDomainsFlags } from '../lib/types';
 
 describe('Integration Tests', () => {
     let connection: Hypervisor;
@@ -183,7 +184,8 @@ describe('Integration Tests', () => {
         }
     });
 
-    after(async () => {
+    after(async function() {
+        this.timeout(10000); // Increase timeout to 10 seconds
         // Clean up: stop and remove the test VM if it exists
         if (domain) {
             try {
@@ -445,5 +447,111 @@ describe('Integration Tests', () => {
             expect(error.code).to.be.a('number');
             expect(error.domain).to.be.a('number');
         }
+    });
+
+    it('should list domains with different flags', async function() {
+        this.timeout(30000); // Add timeout for this test
+        // Create a test domain
+        const archConfig = getArchConfig();
+        const domainDesc: DomainDesc = {
+            type: 'qemu',
+            name: TEST_VM_NAME,
+            memory: {
+                unit: 'KiB',
+                value: 1024 * 1024 // 1GB in KiB
+            },
+            vcpu: {
+                placement: 'static',
+                value: 1
+            },
+            os: {
+                type: {
+                    arch: archConfig.arch,
+                    machine: archConfig.machine,
+                    value: 'hvm'
+                },
+                boot: {
+                    dev: 'hd'
+                }
+            },
+            devices: [
+                {
+                    type: 'emulator',
+                    emulator: {
+                        value: archConfig.emulator
+                    }
+                },
+                {
+                    type: 'disk',
+                    disk: {
+                        type: 'file',
+                        device: 'disk',
+                        source: {
+                            file: DISK_IMAGE
+                        },
+                        target: {
+                            dev: 'hda',
+                            bus: 'virtio'
+                        }
+                    }
+                },
+                {
+                    type: 'console',
+                    console: {
+                        type: 'pty'
+                    }
+                }
+            ]
+        };
+
+        const xml = domainDescToXml(domainDesc);
+        domain = await connection.domainDefineXML(xml);
+
+        // Test listing active domains (should be empty initially)
+        const activeDomains = await connection.connectListAllDomains(1 as ConnectListAllDomainsFlags);
+        expect(activeDomains).to.be.an('array');
+        expect(activeDomains.length).to.equal(0);
+
+        // Test listing inactive domains (should include our defined domain)
+        const inactiveDomains = await connection.connectListAllDomains(2 as ConnectListAllDomainsFlags);
+        expect(inactiveDomains).to.be.an('array');
+        expect(inactiveDomains.length).to.be.greaterThan(0);
+        const inactiveNames = await Promise.all(inactiveDomains.map(d => d.getName()));
+        expect(inactiveNames).to.include(TEST_VM_NAME);
+
+        // Start the domain
+        await connection.domainCreate(domain);
+
+        // Test listing running domains
+        const runningDomains = await connection.connectListAllDomains(16 as ConnectListAllDomainsFlags);
+        expect(runningDomains).to.be.an('array');
+        expect(runningDomains.length).to.be.greaterThan(0);
+        const runningNames = await Promise.all(runningDomains.map(d => d.getName()));
+        expect(runningNames).to.include(TEST_VM_NAME);
+
+        // Test listing persistent domains
+        const persistentDomains = await connection.connectListAllDomains(4 as ConnectListAllDomainsFlags);
+        expect(persistentDomains).to.be.an('array');
+        const persistentNames = await Promise.all(persistentDomains.map(d => d.getName()));
+        expect(persistentNames).to.include(TEST_VM_NAME);
+
+        // Test listing transient domains
+        const transientDomains = await connection.connectListAllDomains(8 as ConnectListAllDomainsFlags);
+        expect(transientDomains).to.be.an('array');
+        const transientNames = await Promise.all(transientDomains.map(d => d.getName()));
+        expect(transientNames).to.not.include(TEST_VM_NAME);
+
+        // Test listing all domains
+        const allDomains = await connection.connectListAllDomains(ConnectListAllDomainsFlags.ACTIVE | ConnectListAllDomainsFlags.INACTIVE);
+        expect(allDomains).to.be.an('array');
+        expect(allDomains.length).to.be.greaterThan(0);
+        const allNames = await Promise.all(allDomains.map(d => d.getName()));
+        expect(allNames).to.include(TEST_VM_NAME);
+
+        // Clean up
+        await connection.domainShutdown(domain);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await connection.domainUndefine(domain);
+        domain = null;
     });
 }); 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/unraid/libvirt/compare/v2.0.1...v2.0.2) (2025-03-30)
+
+
+### Bug Fixes
+
+* publish to correct directory ([90a6294](https://github.com/unraid/libvirt/commit/90a6294d24538df22dd53d9ce2de525c5ff7d87a))
+
 ## [2.0.1](https://github.com/unraid/libvirt/compare/v2.0.0...v2.0.1) (2025-03-30)
 
 

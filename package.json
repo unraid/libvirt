@@ -1,6 +1,6 @@
 {
   "name": "@unraid/libvirt",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Libvirt bindings for Node.js® - forked from vmngr/libvirt",
   "main": "./dist/index.js",
   "types": "./dist/types/index.d.ts",

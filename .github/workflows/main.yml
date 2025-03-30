@@ -140,7 +140,12 @@ jobs:
       - name: Package binary
         run: |
           mkdir -p deploy
-          tar -czf deploy/libvirt-v${{ needs.release-please.outputs.tag_name }}-node-${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz build/Release/
+          cd ${{ github.workspace }}/build/Release
+          tar -czf ${{ github.workspace }}/deploy/libvirt-v${{ needs.release-please.outputs.tag_name }}-node-${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz .
+
+      - name: Validate tarball
+        run: |
+          tar -tf ${{ github.workspace }}/deploy/libvirt-v${{ needs.release-please.outputs.tag_name }}-node-${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
 
       - name: Upload Release Assets
         if: ${{ needs.release-please.outputs.release_created }}

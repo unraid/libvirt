@@ -81,7 +81,7 @@ const hypervisor = new libvirt.Hypervisor({ uri });
 ### Debian / Ubuntu
 
 ```bash
-sudo apt install build-essential libvirt-dev
+sudo apt install build-essential libvirt-dev qemu-system
 npm i @unraid/libvirt
 ```
 
@@ -90,21 +90,71 @@ npm i @unraid/libvirt
 Install Homebrew and Xcode first if not already installed.
 
 ```bash
-brew install libvirt
+brew install libvirt qemu
 npm i @unraid/libvirt
+```
+
+## Development
+
+This project uses pnpm as the package manager. Make sure you have it installed:
+
+```bash
+npm install -g pnpm
+```
+
+### Building
+
+```bash
+pnpm install
+pnpm build
+```
+
+### Testing
+
+The project uses Vitest for testing. You can run tests using:
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run tests with UI
+pnpm test:ui
+```
+
+### Examples
+
+The project includes several example scripts that demonstrate different features:
+
+```bash
+# List all domains
+pnpm examples/list
+
+# Start a domain
+pnpm examples/start
+
+# Shutdown a domain
+pnpm examples/shutdown
+
+# Create a domain using the builder pattern
+pnpm examples/builder
 ```
 
 ## Contribute
 
-Any contribution is welcome! To check wether your contribution conforms our style guide run the following tasks:
+Any contribution is welcome! To check whether your contribution conforms to our style guide, run the following tasks:
 
 ```bash
-pip install cppcheck # required once
-git submodule update --init --recursive # required once
+# Install dependencies
+pnpm install
 
-pnpm run lint/bindings
-pnpm run lint/lib
-pnpm run lint/examples
+# Run linting
+pnpm lint
+
+# Run tests
+pnpm test
 ```
 
 ---

@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/unraid/libvirt/compare/v1.2.2...v2.0.0) (2025-03-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* major api improvements ([#37](https://github.com/unraid/libvirt/issues/37))
+
+### Features
+
+* major api improvements ([#37](https://github.com/unraid/libvirt/issues/37)) ([5b7fa01](https://github.com/unraid/libvirt/commit/5b7fa018cddd4a5eaa140c0de043bb8d2ebeff04))
+
 ## [1.2.2](https://github.com/unraid/libvirt/compare/v1.2.1...v1.2.2) (2025-03-28)
 
 

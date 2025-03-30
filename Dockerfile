@@ -14,16 +14,12 @@ RUN apt-get update && apt-get install -y \
 # Set up the build environment
 WORKDIR /app
 
-# Copy package files first to leverage caching
-COPY package*.json ./
-COPY pnpm-lock.yaml ./
+# Copy source files
+COPY . .
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm && \
     pnpm install --frozen-lockfile
-
-# Copy source files
-COPY . .
 
 # Build the project
 RUN pnpm run build

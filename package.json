@@ -9,6 +9,23 @@
     "access": "public"
   },
   "gypfile": true,
+  "binary": {
+    "module_name": "libvirt",
+    "module_path": "build/Release",
+    "host": "https://github.com/unraid/libvirt/releases/download/",
+    "remote_path": "{version}",
+    "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
+    "target": ">=14.0.0",
+    "target_platform": [
+      "linux",
+      "darwin"
+    ],
+    "target_arch": [
+      "x64",
+      "arm64"
+    ],
+    "runtime": "node"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -17,22 +34,25 @@
   },
   "files": [
     "dist",
-    "build"
+    "binding.gyp",
+    "src"
   ],
   "scripts": {
-    "prebuild": "pnpm clean",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist build",
     "build": "pnpm build/validate && pnpm build/native && pnpm build/ts",
     "build/validate": "node scripts/validate-platform.js",
     "build/native": "node-gyp rebuild",
     "build/ts": "tsc --build --verbose",
+    "prepare": "pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
+    "test:package": "rimraf /tmp/libvirt && mkdir /tmp/libvirt && cp -r dist package.json README.md LICENSE binding.gyp src /tmp/libvirt/ && cd /tmp/libvirt && pnpm install",
     "examples/list": "node examples/list.js",
     "examples/start": "node examples/start.js",
     "examples/shutdown": "node examples/shutdown.js",
-    "examples/builder": "node examples/builder.js"
+    "examples/builder": "node examples/builder.js",
+    "install": "node-pre-gyp install --fallback-to-build"
   },
   "repository": {
     "type": "git",
@@ -63,7 +83,8 @@
     "bindings": "^1.5.0",
     "node-addon-api": "^8.3.0",
     "tsx": "^4.19.2",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "@mapbox/node-pre-gyp": "^2.0.0"
   },
   "devDependencies": {
     "@types/bindings": "^1.5.5",

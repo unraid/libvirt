@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { Domain } from './domain.js';
 import { Hypervisor } from './hypervisor.js';
-import { DomainGetXMLDescFlags } from './types.js';
+import { DomainGetXMLDescFlags, DomainState } from './types.js';
 
 describe('Domain', () => {
     let domain: Domain;
@@ -16,7 +16,7 @@ describe('Domain', () => {
         const domainUndefine = vi.fn();
         const domainGetXMLDesc = vi.fn().mockResolvedValue('<domain/>');
         const domainGetInfo = vi.fn().mockResolvedValue({
-            state: 1,
+            state: DomainState.RUNNING,
             maxMem: 1024,
             memory: 512,
             nrVirtCpu: 1,
@@ -25,6 +25,8 @@ describe('Domain', () => {
         const domainGetID = vi.fn().mockResolvedValue(1);
         const domainGetName = vi.fn().mockResolvedValue('test-vm');
         const domainGetUUIDString = vi.fn().mockResolvedValue('123e4567-e89b-12d3-a456-426614174000');
+        const domainSuspend = vi.fn();
+        const domainResume = vi.fn();
 
         // Create mock hypervisor
         hypervisor = {
@@ -37,7 +39,9 @@ describe('Domain', () => {
             domainGetInfo,
             domainGetID,
             domainGetName,
-            domainGetUUIDString
+            domainGetUUIDString,
+            domainSuspend,
+            domainResume
         } as unknown as Hypervisor;
 
         // Mock the native domain
@@ -81,6 +85,20 @@ describe('Domain', () => {
             const uuid = await domain.getUUIDString();
             expect(uuid).toBe('123e4567-e89b-12d3-a456-426614174000');
             expect(hypervisor.domainGetUUIDString).toHaveBeenCalledWith(domain);
+        });
+    });
+
+    describe('suspend', () => {
+        it('should suspend the domain', async () => {
+            await domain.suspend();
+            expect(hypervisor.domainSuspend).toHaveBeenCalledWith(domain);
+        });
+    });
+
+    describe('resume', () => {
+        it('should resume the domain', async () => {
+            await domain.resume();
+            expect(hypervisor.domainResume).toHaveBeenCalledWith(domain);
         });
     });
 }); 

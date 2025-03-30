@@ -172,4 +172,119 @@ describe('Domain Lifecycle Tests', () => {
             domain = null;
         }
     }, 60000);
+
+    it('should handle suspend and resume operations', async () => {
+        // Create a copy of the NVRAM file for this VM
+        if (archConfig.firmware) {
+            execSync(`cp "${archConfig.firmware.vars}" "/tmp/test-vm.nvram"`);
+        }
+
+        // Create a minimal VM configuration
+        const domainDesc: DomainDesc = {
+            type: 'qemu',
+            name: TEST_VM_NAME,
+            memory: { value: 512 * 1024 }, // 512MB RAM
+            vcpu: { value: 1 },
+            os: {
+                type: { 
+                    arch: archConfig.arch,
+                    machine: archConfig.machine,
+                    value: 'hvm'
+                },
+                boot: { dev: 'hd' }
+            },
+            devices: [
+                {
+                    type: 'emulator',
+                    emulator: {
+                        value: archConfig.emulator
+                    }
+                },
+                {
+                    type: 'disk',
+                    disk: {
+                        type: 'file',
+                        device: 'disk',
+                        driver: {
+                            name: 'qemu',
+                            type: 'qcow2'
+                        },
+                        source: {
+                            file: DISK_IMAGE
+                        },
+                        target: {
+                            dev: 'vda',
+                            bus: 'virtio'
+                        }
+                    }
+                },
+                {
+                    type: 'console',
+                    console: {
+                        type: 'pty'
+                    }
+                }
+            ]
+        };
+
+        // Convert domain description to XML
+        const xml = domainDescToXml(domainDesc);
+        console.log('Generated XML:', xml);
+
+        try {
+            // Define and start the domain
+            domain = await connection.domainDefineXML(xml);
+            console.log('Domain defined successfully');
+
+            if (!domain) {
+                throw new Error('Failed to create domain');
+            }
+
+            // Start the domain
+            await domain.create();
+            console.log('Domain created successfully');
+
+            // Verify initial running state
+            const initialInfo = await connection.domainGetInfo(domain);
+            console.log('Initial domain state:', initialInfo.state);
+            expect(initialInfo.state).toBe(DomainState.RUNNING);
+
+            // Suspend the domain
+            await domain.suspend();
+            console.log('Domain suspended');
+
+            // Verify state after suspend
+            const stateAfterSuspend = await connection.domainGetInfo(domain);
+            console.log('Domain state after suspend:', stateAfterSuspend.state);
+            expect(stateAfterSuspend.state).toBe(DomainState.PAUSED);
+
+            // Resume the domain
+            await domain.resume();
+            console.log('Domain resumed');
+
+            // Verify state after resume
+            const stateAfterResume = await connection.domainGetInfo(domain);
+            console.log('Domain state after resume:', stateAfterResume.state);
+            expect(stateAfterResume.state).toBe(DomainState.RUNNING);
+
+            // Clean up by shutting down
+            console.log('Performing cleanup shutdown...');
+            await domain.destroy();
+
+            // Verify final state
+            const finalState = (await domain.getInfo()).state;
+            console.log('Final domain state:', finalState);
+            expect(finalState).toBe(DomainState.SHUTOFF);
+
+            // Undefine the domain
+            await domain.undefine();
+
+        } catch (error) {
+            console.error('Error during VM operations:', error);
+            throw error;
+        } finally {
+            // Clear the domain reference before cleanup
+            domain = null;
+        }
+    }, 60000);
 }); 

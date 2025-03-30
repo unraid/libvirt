@@ -39,7 +39,7 @@ class DomainCreateWorker;
 class DomainShutdownWorker;
 class DomainGetXMLDescWorker;
 class DomainUndefineWorker;
-class DomainPauseWorker;
+class DomainSuspendWorker;
 class DomainResumeWorker;
 
 class NodeGetInfoWorker;
@@ -106,6 +106,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     friend class DomainShutdownWorker;
     friend class DomainGetXMLDescWorker;
     friend class DomainUndefineWorker;
+    friend class DomainResumeWorker;
 
     friend class NodeGetInfoWorker;
 };

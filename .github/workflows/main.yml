@@ -121,8 +121,6 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Install build dependencies
         run: |
@@ -132,6 +130,9 @@ jobs:
           elif [ "${{ runner.os }}" == "macOS" ]; then
             brew install libvirt
           fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build native module
         run: pnpm build/native

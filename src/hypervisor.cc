@@ -6,10 +6,6 @@
  */
 
 #include "src/hypervisor.h"
-#include "domain.h"
-#include "worker.h"
-#include <libvirt/libvirt.h>
-#include <napi.h>
 
 Napi::FunctionReference Hypervisor::constructor;
 Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {

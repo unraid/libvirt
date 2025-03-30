@@ -46,7 +46,6 @@ jobs:
         run: |
           # Create test artifacts directory
           mkdir -p test-artifacts
-          mkdir -p coverage
 
           # Build the Docker image with GitHub Actions cache
           docker buildx build \
@@ -59,14 +58,18 @@ jobs:
             .
 
           # Run the container with necessary privileges
-          docker run --rm \
+          docker run \
             --platform linux/${{ matrix.arch }} \
             --privileged \
             -v /var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock \
             -v /var/lib/libvirt:/var/lib/libvirt \
             -v $(pwd)/test-artifacts:/app/test-artifacts \
-            -v $(pwd)/coverage:/app/coverage \
+            --name test-container \
             libvirt-test-${{ matrix.arch }}
+
+          # Copy coverage data from the container
+          docker cp test-container:/app/coverage ./coverage
+          docker rm test-container
 
       - name: Upload test artifacts
         if: always()

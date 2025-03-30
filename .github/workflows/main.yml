@@ -87,7 +87,7 @@ jobs:
   prebuild:
     name: Build and (Possibly) Publish Pre-built Binaries
     needs: [release-please]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         node-version: [22]

@@ -5,7 +5,7 @@
 ![Alpha badge][alphabadge]
 ![CI badge][cibadge]
 ![Tests badge][testsbadge]
-![Coverage badge][coveragebadge]
+![Codecov badge][codecovbadge]
 ![License badge][licensebadge]
 ![Contributors badge][contribadge]
 ![Issues badge][issuesbadge]
@@ -186,7 +186,7 @@ SOFTWARE.
 [licensebadge]: https://img.shields.io/github/license/unraid/libvirt "License badge"
 [cibadge]: https://github.com/unraid/libvirt/workflows/CI/badge.svg "CI badge"
 [testsbadge]: https://img.shields.io/github/actions/workflow/status/unraid/libvirt/integration-test.yml?label=tests "Tests badge"
-[coveragebadge]: https://img.shields.io/github/actions/workflow/status/unraid/libvirt/integration-test.yml?label=coverage "Coverage badge"
+[codecovbadge]: https://codecov.io/gh/unraid/libvirt/branch/main/graph/badge.svg "Codecov badge"
 [contribadge]: https://img.shields.io/github/contributors/unraid/libvirt "Contributors badge"
 [issuesbadge]: https://img.shields.io/github/issues/unraid/libvirt "Issues badge"
 [prbadge]: https://img.shields.io/github/issues-pr/unraid/libvirt "PR badge"

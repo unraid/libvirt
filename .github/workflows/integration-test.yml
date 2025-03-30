@@ -71,13 +71,10 @@ jobs:
           docker cp test-container:/app/coverage ./coverage
           docker rm test-container
 
-      - name: Upload test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          name: test-artifacts-${{ matrix.arch }}
-          path: test-artifacts/
-          retention-days: 7
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload coverage report
         if: always()

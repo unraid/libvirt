@@ -1,7 +1,13 @@
+/**
+ * Options for creating a new Hypervisor instance
+ */
 export interface HypervisorOptions {
     uri: string;
 }
 
+/**
+ * Information about a domain's state and resources
+ */
 export interface DomainInfo {
     state: DomainState;
     maxMem: number;
@@ -10,6 +16,9 @@ export interface DomainInfo {
     cpuTime: number;
 }
 
+/**
+ * Information about the host node
+ */
 export interface NodeInfo {
     model: string;
     memory: number;
@@ -21,24 +30,36 @@ export interface NodeInfo {
     threads: number;
 }
 
+/**
+ * Information about a domain's block device
+ */
 export interface DomainBlockInfo {
     capacity: number;
     allocation: number;
     physical: number;
 }
 
+/**
+ * Information about a domain's network interface
+ */
 export interface DomainInterfaceInfo {
     name: string;
     hwaddr: string;
     addrs: DomainInterfaceAddress[];
 }
 
+/**
+ * Information about a network interface address
+ */
 export interface DomainInterfaceAddress {
     type: number;
     addr: string;
     prefix: number;
 }
 
+/**
+ * Possible states a domain can be in
+ */
 export enum DomainState {
     NOSTATE = 0,
     RUNNING = 1,
@@ -50,6 +71,9 @@ export enum DomainState {
     PMSUSPENDED = 7
 }
 
+/**
+ * Flags for domain reboot operations
+ */
 export enum DomainRebootFlags {
     NONE = 0,
     ACPI = 1,
@@ -58,12 +82,18 @@ export enum DomainRebootFlags {
     SIGNAL = 8
 }
 
+/**
+ * Sources for domain interface addresses
+ */
 export enum DomainInterfaceAddressesSource {
     LEASE = 0,
     AGENT = 1,
     ARP = 2
 }
 
+/**
+ * Flags for listing domains
+ */
 export enum ConnectListAllDomainsFlags {
     ACTIVE = 1,
     INACTIVE = 2,
@@ -83,76 +113,47 @@ export enum ConnectListAllDomainsFlags {
     NO_CHECKPOINT = 32768
 }
 
+/**
+ * Flags for getting domain XML description
+ */
 export enum DomainGetXMLDescFlags {
+    NONE = 0,
     SECURE = 1,
     INACTIVE = 2,
     UPDATE_CPU = 4,
     MIGRATABLE = 8
 }
 
-export interface Hypervisor {
-    connectOpen(): Promise<void>;
-    connectClose(): Promise<void>;
-    connectListAllDomains(flags?: ConnectListAllDomainsFlags): Promise<Domain[]>;
-    connectListDomains(): Promise<number[]>;
-    connectListDefinedDomains(): Promise<string[]>;
-    connectGetMaxVcpus(type?: string): Promise<number>;
-    connectGetHostname(): Promise<string>;
+/**
+ * Marker type for the native domain object
+ */
+export type Domain = any;
 
-    domainCreateXML(xml: string): Promise<Domain>;
-    domainDefineXML(xml: string): Promise<Domain>;
-    domainGetInfo(domain: Domain): Promise<DomainInfo>;
-    domainGetID(domain: Domain): Promise<number | null>;
-    domainGetName(domain: Domain): Promise<string>;
-    domainGetUUIDString(domain: Domain): Promise<string>;
-    domainLookupByID(id: number): Promise<Domain>;
-    domainLookupByName(name: string): Promise<Domain>;
-    domainLookupByUUIDString(uuid: string): Promise<Domain>;
-    domainSave(domain: Domain, filename: string): Promise<void>;
-    domainRestore(filename: string): Promise<void>;
-    domainCreate(domain: Domain): Promise<void>;
-    domainShutdown(domain: Domain): Promise<void>;
-    domainGetXMLDesc(domain: Domain, flags?: DomainGetXMLDescFlags): Promise<string>;
+export class LibvirtError extends Error {
+    code: number;
+    domain: number;
+    level: number;
+    str1?: string;
+    str2?: string;
+    str3?: string;
 
-    nodeGetInfo(): Promise<NodeInfo>;
-}
+    constructor(message: string, code: number, domain: number, level: number, str1?: string, str2?: string, str3?: string) {
+        super(message);
+        this.name = 'LibvirtError';
+        this.code = code;
+        this.domain = domain;
+        this.level = level;
+        this.str1 = str1;
+        this.str2 = str2;
+        this.str3 = str3;
 
-export interface Domain {
-    isActive(): Promise<boolean>;
-    isPersistent(): Promise<boolean>;
-    isUpdated(): Promise<boolean>;
-    
-    suspend(): Promise<void>;
-    resume(): Promise<void>;
-    shutdown(): Promise<void>;
-    reboot(flags?: DomainRebootFlags): Promise<void>;
-    reset(): Promise<void>;
-    
-    getState(): Promise<DomainState>;
-    getMaxMemory(): Promise<number>;
-    setMaxMemory(memory: number): Promise<void>;
-    getMemory(): Promise<number>;
-    setMemory(memory: number): Promise<void>;
-    getMaxVcpus(): Promise<number>;
-    setVcpus(vcpus: number): Promise<void>;
-    getVcpus(): Promise<number>;
-    
-    getXMLDesc(flags?: DomainGetXMLDescFlags): Promise<string>;
-    defineXML(xml: string): Promise<void>;
-    
-    hasCurrentSnapshot(): Promise<boolean>;
-    hasSnapshot(): Promise<boolean>;
-    
-    getBlockInfo(device: string): Promise<DomainBlockInfo>;
-    getBlockDevices(): Promise<string[]>;
-    
-    getInterfaceAddresses(source?: DomainInterfaceAddressesSource): Promise<DomainInterfaceInfo[]>;
-}
+        // Add more context to the error message
+        if (message === 'Expected a number.') {
+            this.message = `Type error: Expected a number but received ${typeof str1 || 'undefined'}. This error typically occurs when calling libvirt methods that require numeric parameters.`;
+        }
+    }
 
-export interface HypervisorConstructor {
-    new (options: HypervisorOptions): Hypervisor;
-}
-
-export interface DomainConstructor {
-    new (): Domain;
+    toString(): string {
+        return `${this.name}: ${this.message} (code: ${this.code}, domain: ${this.domain}, level: ${this.level})`;
+    }
 } 

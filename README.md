@@ -4,10 +4,14 @@
 
 ![Alpha badge][alphabadge]
 ![CI badge][cibadge]
+![Tests badge][testsbadge]
+![Coverage badge][coveragebadge]
 ![License badge][licensebadge]
 ![Contributors badge][contribadge]
 ![Issues badge][issuesbadge]
 ![PR badge][prbadge]
+![NPM Version][npmbadge]
+![Last Update][lastcommitbadge]
 
 Libvirt bindings for Node.js®.
 
@@ -129,8 +133,12 @@ SOFTWARE.
 
 [cover]: cover.png "Cover image"
 [alphabadge]: https://img.shields.io/badge/-alpha-green "Alpha badge"
-[licensebadge]: https://img.shields.io/github/license/vmngr/libvirt "License badge"
-[cibadge]: https://github.com/vmngr/libvirt/workflows/CI/badge.svg "CI badge"
-[contribadge]: https://img.shields.io/github/contributors/vmngr/libvirt "Contributors badge"
-[issuesbadge]: https://img.shields.io/github/issues/vmngr/libvirt "Issues badge"
-[prbadge]: https://img.shields.io/github/issues-pr/vmngr/libvirt "PR badge"
+[licensebadge]: https://img.shields.io/github/license/unraid/libvirt "License badge"
+[cibadge]: https://github.com/unraid/libvirt/workflows/CI/badge.svg "CI badge"
+[testsbadge]: https://img.shields.io/github/actions/workflow/status/unraid/libvirt/integration-test.yml?label=tests "Tests badge"
+[coveragebadge]: https://img.shields.io/github/actions/workflow/status/unraid/libvirt/integration-test.yml?label=coverage "Coverage badge"
+[contribadge]: https://img.shields.io/github/contributors/unraid/libvirt "Contributors badge"
+[issuesbadge]: https://img.shields.io/github/issues/unraid/libvirt "Issues badge"
+[prbadge]: https://img.shields.io/github/issues-pr/unraid/libvirt "PR badge"
+[npmbadge]: https://img.shields.io/npm/v/@unraid/libvirt "NPM Version badge"
+[lastcommitbadge]: https://img.shields.io/github/last-commit/unraid/libvirt "Last Commit badge"

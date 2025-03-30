@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/unraid/libvirt/compare/v2.0.0...v2.0.1) (2025-03-30)
+
+
+### Bug Fixes
+
+* remove build assets and add node-pre-gyp support ([#41](https://github.com/unraid/libvirt/issues/41)) ([2497410](https://github.com/unraid/libvirt/commit/24974108e8fd522671e5cbfc93da5241ae59c0d3))
+
 ## [2.0.0](https://github.com/unraid/libvirt/compare/v1.2.2...v2.0.0) (2025-03-30)
 
 

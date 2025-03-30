@@ -48,6 +48,23 @@ export class Domain {
     }
 
     /**
+     * Pauses the domain's execution
+     * @throws {LibvirtError} If pausing the domain fails
+     */
+    async suspend(): Promise<void> {
+        return this.hypervisor.domainSuspend(this);
+    }
+
+    /**
+     * Resumes a paused domain.
+     * This operation restarts execution of a domain that was previously paused.
+     * @throws {LibvirtError} If resuming the domain fails
+     */
+    async resume(): Promise<void> {
+        return this.hypervisor.domainResume(this);
+    }
+
+    /**
      * Forcefully terminates the domain.
      * This is equivalent to pulling the power plug on a physical machine.
      * @throws {LibvirtError} If destroying the domain fails

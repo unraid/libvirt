@@ -6,6 +6,10 @@
  */
 
 #include "src/hypervisor.h"
+#include "domain.h"
+#include "worker.h"
+#include <libvirt/libvirt.h>
+#include <napi.h>
 
 Napi::FunctionReference Hypervisor::constructor;
 Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
@@ -39,6 +43,8 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("domainRestore", &Hypervisor::DomainRestore),
         InstanceMethod("domainGetXMLDesc", &Hypervisor::DomainGetXMLDesc),
         InstanceMethod("domainUndefine", &Hypervisor::DomainUndefine),
+        InstanceMethod("domainSuspend", &Hypervisor::DomainSuspend),
+        InstanceMethod("domainResume", &Hypervisor::DomainResume),
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
     });

@@ -181,6 +181,30 @@ export class Hypervisor {
     }
 
     /**
+     * Pauses a domain.
+     * @param domain - The domain to pause
+     * @throws {LibvirtError} If pausing the domain fails
+     */
+    async domainSuspend(domain: Domain): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainSuspend.bind(this.nativeHypervisor),
+            domain.getNativeDomain()
+        );
+    }
+
+    /**
+     * Resumes a paused domain.
+     * @param domain - The domain to resume
+     * @throws {LibvirtError} If resuming the domain fails
+     */
+    async domainResume(domain: Domain): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainResume.bind(this.nativeHypervisor),
+            domain.getNativeDomain()
+        );
+    }
+
+    /**
      * Forcefully terminates a domain.
      * @param domain - The domain to destroy
      * @throws {LibvirtError} If destroying the domain fails

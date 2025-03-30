@@ -19,6 +19,8 @@ COPY package*.json ./
 COPY pnpm-lock.yaml ./
 COPY binding.gyp ./
 COPY src ./src
+COPY scripts ./scripts
+
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm && \
@@ -65,6 +67,7 @@ COPY package*.json ./
 COPY pnpm-lock.yaml ./
 COPY binding.gyp ./
 COPY src ./src
+COPY scripts ./scripts
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm && \

@@ -20,15 +20,16 @@
     "build"
   ],
   "scripts": {
-    "prebuild": "pnpm clean",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist build",
     "build": "pnpm build/validate && pnpm build/native && pnpm build/ts",
     "build/validate": "node scripts/validate-platform.js",
     "build/native": "node-gyp rebuild",
     "build/ts": "tsc --build --verbose",
+    "prepare": "pnpm build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
+    "test:package": "rimraf /tmp/libvirt && mkdir /tmp/libvirt && cp -r dist package.json README.md LICENSE binding.gyp src /tmp/libvirt/ && cd /tmp/libvirt && pnpm install",
     "examples/list": "node examples/list.js",
     "examples/start": "node examples/start.js",
     "examples/shutdown": "node examples/shutdown.js",

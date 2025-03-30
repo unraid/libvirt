@@ -67,7 +67,6 @@ jobs:
             -v $(pwd)/test-artifacts:/app/test-artifacts \
             -v $(pwd)/coverage:/app/coverage \
             libvirt-test-${{ matrix.arch }}
-            pnpm test:coverage
 
       - name: Upload test artifacts
         if: always()

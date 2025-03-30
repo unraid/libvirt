@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,7 +29,7 @@ COPY . .
 RUN pnpm run build
 
 # Test stage
-FROM node:20-slim AS test
+FROM node:22-slim AS test
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive

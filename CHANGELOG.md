@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/unraid/libvirt/compare/v2.0.3...v2.0.4) (2025-03-30)
+
+
+### Bug Fixes
+
+* remote path in pre-gyp incorrect ([c27deb6](https://github.com/unraid/libvirt/commit/c27deb640ef64928b4472512dc1e0ae485fd3e88))
+
 ## [2.0.3](https://github.com/unraid/libvirt/compare/v2.0.2...v2.0.3) (2025-03-30)
 
 

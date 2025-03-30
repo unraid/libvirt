@@ -14,12 +14,18 @@ RUN apt-get update && apt-get install -y \
 # Set up the build environment
 WORKDIR /app
 
-# Copy source files
-COPY . .
+# Copy package files first to leverage caching
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+COPY binding.gyp ./
+COPY src ./src
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm && \
     pnpm install --frozen-lockfile
+
+# Copy source files
+COPY . .
 
 # Build the project
 RUN pnpm run build
@@ -54,9 +60,13 @@ RUN useradd -m -s /bin/bash -g libvirt libvirt && \
 # Set up the test environment
 WORKDIR /app
 
-# Copy package files and install all dependencies (including dev)
+# Copy package files and binding.gyp first
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
+COPY binding.gyp ./
+COPY src ./src
+
+# Install pnpm and dependencies
 RUN npm install -g pnpm && \
     pnpm install --frozen-lockfile
 

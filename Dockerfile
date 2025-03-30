@@ -50,4 +50,4 @@ RUN mkdir -p /home/libvirt/.config/libvirt && \
 USER libvirt
 
 # Start libvirtd and run tests
-CMD ["/start.sh"]
+CMD ["/bin/sh", "-c", "/usr/sbin/libvirtd --daemon && sleep 2 && pnpm test:coverage"]

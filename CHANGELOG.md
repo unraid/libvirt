@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/unraid/libvirt/compare/v2.0.2...v2.0.3) (2025-03-30)
+
+
+### Bug Fixes
+
+* use node ABI versioning for prebuilt binaries ([#44](https://github.com/unraid/libvirt/issues/44)) ([3b05917](https://github.com/unraid/libvirt/commit/3b05917df9d30b70c8ee05e8f25ee1f0cd564b04))
+
 ## [2.0.2](https://github.com/unraid/libvirt/compare/v2.0.1...v2.0.2) (2025-03-30)
 
 

@@ -39,7 +39,7 @@ jobs:
       - name: Cache APT Packages
         uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
-          packages: libvirt-dev
+          packages: libvirt-dev qemu-system qemu-user-static
           version: 1.0
 
       - name: Set Node.js
@@ -72,8 +72,11 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: test
-        run: pnpm run test
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+
 
       - name: Setup NPM Authentication
         if: ${{ needs.release-please.outputs.release_created }}

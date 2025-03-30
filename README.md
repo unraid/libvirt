@@ -4,10 +4,14 @@
 
 ![Alpha badge][alphabadge]
 ![CI badge][cibadge]
+![Tests badge][testsbadge]
+![Codecov badge][codecovbadge]
 ![License badge][licensebadge]
 ![Contributors badge][contribadge]
 ![Issues badge][issuesbadge]
 ![PR badge][prbadge]
+![NPM Version][npmbadge]
+![Last Update][lastcommitbadge]
 
 Libvirt bindings for Node.js®.
 
@@ -77,7 +81,7 @@ const hypervisor = new libvirt.Hypervisor({ uri });
 ### Debian / Ubuntu
 
 ```bash
-sudo apt install build-essential libvirt-dev
+sudo apt install build-essential libvirt-dev qemu-system
 npm i @unraid/libvirt
 ```
 
@@ -86,21 +90,71 @@ npm i @unraid/libvirt
 Install Homebrew and Xcode first if not already installed.
 
 ```bash
-brew install libvirt
+brew install libvirt qemu
 npm i @unraid/libvirt
+```
+
+## Development
+
+This project uses pnpm as the package manager. Make sure you have it installed:
+
+```bash
+npm install -g pnpm
+```
+
+### Building
+
+```bash
+pnpm install
+pnpm build
+```
+
+### Testing
+
+The project uses Vitest for testing. You can run tests using:
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run tests with UI
+pnpm test:ui
+```
+
+### Examples
+
+The project includes several example scripts that demonstrate different features:
+
+```bash
+# List all domains
+pnpm examples/list
+
+# Start a domain
+pnpm examples/start
+
+# Shutdown a domain
+pnpm examples/shutdown
+
+# Create a domain using the builder pattern
+pnpm examples/builder
 ```
 
 ## Contribute
 
-Any contribution is welcome! To check wether your contribution conforms our style guide run the following tasks:
+Any contribution is welcome! To check whether your contribution conforms to our style guide, run the following tasks:
 
 ```bash
-pip install cppcheck # required once
-git submodule update --init --recursive # required once
+# Install dependencies
+pnpm install
 
-pnpm run lint/bindings
-pnpm run lint/lib
-pnpm run lint/examples
+# Run linting
+pnpm lint
+
+# Run tests
+pnpm test
 ```
 
 ---
@@ -129,8 +183,12 @@ SOFTWARE.
 
 [cover]: cover.png "Cover image"
 [alphabadge]: https://img.shields.io/badge/-alpha-green "Alpha badge"
-[licensebadge]: https://img.shields.io/github/license/vmngr/libvirt "License badge"
-[cibadge]: https://github.com/vmngr/libvirt/workflows/CI/badge.svg "CI badge"
-[contribadge]: https://img.shields.io/github/contributors/vmngr/libvirt "Contributors badge"
-[issuesbadge]: https://img.shields.io/github/issues/vmngr/libvirt "Issues badge"
-[prbadge]: https://img.shields.io/github/issues-pr/vmngr/libvirt "PR badge"
+[licensebadge]: https://img.shields.io/github/license/unraid/libvirt "License badge"
+[cibadge]: https://github.com/unraid/libvirt/workflows/CI/badge.svg "CI badge"
+[testsbadge]: https://img.shields.io/github/actions/workflow/status/unraid/libvirt/integration-test.yml?label=tests "Tests badge"
+[codecovbadge]: https://codecov.io/gh/unraid/libvirt/branch/main/graph/badge.svg "Codecov badge"
+[contribadge]: https://img.shields.io/github/contributors/unraid/libvirt "Contributors badge"
+[issuesbadge]: https://img.shields.io/github/issues/unraid/libvirt "Issues badge"
+[prbadge]: https://img.shields.io/github/issues-pr/unraid/libvirt "PR badge"
+[npmbadge]: https://img.shields.io/npm/v/@unraid/libvirt "NPM Version badge"
+[lastcommitbadge]: https://img.shields.io/github/last-commit/unraid/libvirt "Last Commit badge"

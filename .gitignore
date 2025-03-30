@@ -11,3 +11,8 @@
 
 # tsbuildinfo
 tsconfig.tsbuildinfo
+
+# coverage
+coverage
+
+test-artifacts/

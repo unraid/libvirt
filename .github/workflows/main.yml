@@ -21,6 +21,7 @@ jobs:
         id: release
         with:
           release-type: node
+
   build:
     runs-on: ubuntu-latest
     needs: [release-please]
@@ -72,12 +73,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true
-
-
       - name: Setup NPM Authentication
         if: ${{ needs.release-please.outputs.release_created }}
         run: |
@@ -88,3 +83,62 @@ jobs:
         run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  prebuild:
+    name: Build and (Possibly) Publish Pre-built Binaries
+    needs: [release-please]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+        arch: [amd64, arm64]
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install build dependencies
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y libvirt-dev
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            brew install libvirt
+          fi
+
+      - name: Build native module
+        run: pnpm build/native
+
+      - name: Package binary
+        run: |
+          mkdir -p deploy
+          tar -czf deploy/libvirt-v${{ needs.release-please.outputs.tag_name }}-node-${{ matrix.node-version }}-${{ matrix.os }}-${{ matrix.arch }}.tar.gz build/Release/
+
+      - name: Upload Release Assets
+        if: ${{ needs.release-please.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Use the tag name directly from release-please output
+          for file in deploy/*; do
+            echo "Uploading $file to release..."
+            gh release upload "${{ needs.release-please.outputs.tag_name }}" "$file" --clobber
+          done

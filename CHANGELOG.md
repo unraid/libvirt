@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/unraid/libvirt/compare/v2.0.4...v2.1.0) (2025-03-30)
+
+
+### Features
+
+* domain resume and suspend ([#47](https://github.com/unraid/libvirt/issues/47)) ([2b96ed3](https://github.com/unraid/libvirt/commit/2b96ed3b5e9e74a1f1c134a4dc24d237b29ac2f0))
+
 ## [2.0.4](https://github.com/unraid/libvirt/compare/v2.0.3...v2.0.4) (2025-03-30)
 
 

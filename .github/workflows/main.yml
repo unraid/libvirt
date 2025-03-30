@@ -90,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [18, 22] # 18 is required for cloudflare workers
         arch: [amd64, arm64]
         os: [ubuntu-latest, macos-latest]
       fail-fast: false
@@ -152,8 +152,11 @@ jobs:
             *) ARCH_NAME="${{ matrix.arch }}" ;;
           esac
 
+          # Get Node.js ABI version
+          NODE_ABI=$(node -e "console.log(process.versions.modules)")
+          
           # Construct filename
-          FILENAME="libvirt-${{ needs.release-please.outputs.tag_name }}-node-${{ matrix.node-version }}-${PLATFORM}-${ARCH_NAME}.tar.gz"
+          FILENAME="libvirt-${{ needs.release-please.outputs.tag_name }}-node-v${NODE_ABI}-${PLATFORM}-${ARCH_NAME}.tar.gz"
 
           echo "FILENAME=$FILENAME" >> $GITHUB_OUTPUT
 

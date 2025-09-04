@@ -44,7 +44,7 @@ jobs:
           version: 1.0
 
       - name: Set Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
 
@@ -106,7 +106,7 @@ jobs:
           python-version: "3.13"
 
       - name: Set Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
 

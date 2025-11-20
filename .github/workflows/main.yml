@@ -29,7 +29,7 @@ jobs:
     if: ${{ github.event_name == 'pull_request' || needs.release-please.outputs.release_created }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
 

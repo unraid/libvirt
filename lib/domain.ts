@@ -1,4 +1,4 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, DomainState } from './types.js';
 import { Hypervisor } from './hypervisor.js';
 
 /**
@@ -61,6 +61,10 @@ export class Domain {
      * @throws {LibvirtError} If resuming the domain fails
      */
     async resume(): Promise<void> {
+        const info = await this.getInfo();
+        if (info.state === DomainState.PMSUSPENDED) {
+            return this.hypervisor.domainPMWakeup(this);
+        }
         return this.hypervisor.domainResume(this);
     }
 

@@ -47,6 +47,7 @@ class Domain : public Napi::ObjectWrap<Domain> {
     friend class DomainUndefineWorker;
     friend class DomainSuspendWorker;
     friend class DomainResumeWorker;
+    friend class DomainPMWakeupWorker;
 };
 
 #endif  // SRC_DOMAIN_H_

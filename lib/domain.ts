@@ -1,4 +1,4 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, DomainState } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, DomainState, NodeSuspendTarget } from './types.js';
 import { Hypervisor } from './hypervisor.js';
 
 /**
@@ -72,8 +72,8 @@ export class Domain {
      * Suspends the domain using guest power management.
      * @throws {LibvirtError} If suspending the domain fails
      */
-    async pmSuspend(): Promise<void> {
-        return this.hypervisor.domainPMSuspend(this);
+    async pmSuspend(target: NodeSuspendTarget = NodeSuspendTarget.MEM): Promise<void> {
+        return this.hypervisor.domainPMSuspend(this, target);
     }
 
     /**

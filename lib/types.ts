@@ -92,6 +92,15 @@ export enum DomainInterfaceAddressesSource {
 }
 
 /**
+ * Targets for suspending a node or domain.
+ */
+export enum NodeSuspendTarget {
+    MEM = 0,
+    DISK = 1,
+    HYBRID = 2
+}
+
+/**
  * Flags for listing domains
  */
 export enum ConnectListAllDomainsFlags {

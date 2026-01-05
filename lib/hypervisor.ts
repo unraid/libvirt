@@ -1,4 +1,4 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo, NodeSuspendTarget } from './types.js';
 import { Domain } from './domain.js';
 import { createRequire } from 'node:module';
 import { wrapMethod } from './error.js';
@@ -221,10 +221,11 @@ export class Hypervisor {
      * @param domain - The domain to suspend
      * @throws {LibvirtError} If suspending the domain fails
      */
-    async domainPMSuspend(domain: Domain): Promise<void> {
+    async domainPMSuspend(domain: Domain, target: NodeSuspendTarget = NodeSuspendTarget.MEM): Promise<void> {
         return wrapMethod(
             this.nativeHypervisor.domainPMSuspend.bind(this.nativeHypervisor),
-            domain.getNativeDomain()
+            domain.getNativeDomain(),
+            target
         );
     }
 

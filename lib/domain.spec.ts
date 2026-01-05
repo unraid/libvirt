@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { Domain } from './domain.js';
 import { Hypervisor } from './hypervisor.js';
-import { DomainGetXMLDescFlags, DomainState } from './types.js';
+import { DomainGetXMLDescFlags, DomainState, NodeSuspendTarget } from './types.js';
 
 describe('Domain', () => {
     let domain: Domain;
@@ -128,7 +128,12 @@ describe('Domain', () => {
     describe('pmSuspend', () => {
         it('should suspend the domain with power management', async () => {
             await domain.pmSuspend();
-            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain);
+            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain, NodeSuspendTarget.MEM);
+        });
+
+        it('should allow overriding the suspend target', async () => {
+            await domain.pmSuspend(NodeSuspendTarget.DISK);
+            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain, NodeSuspendTarget.DISK);
         });
     });
 });

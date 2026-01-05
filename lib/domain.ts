@@ -1,4 +1,4 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, DomainState, NodeSuspendTarget } from './types.js';
 import { Hypervisor } from './hypervisor.js';
 
 /**
@@ -56,12 +56,25 @@ export class Domain {
     }
 
     /**
-     * Resumes a paused domain.
-     * This operation restarts execution of a domain that was previously paused.
+     * Resumes a paused or PM-suspended domain.
+     * If the domain is in PMSUSPENDED state, wakes it using PM wakeup.
+     * Otherwise, resumes execution of a domain that was previously paused.
      * @throws {LibvirtError} If resuming the domain fails
      */
     async resume(): Promise<void> {
+        const info = await this.getInfo();
+        if (info.state === DomainState.PMSUSPENDED) {
+            return this.hypervisor.domainPMWakeup(this);
+        }
         return this.hypervisor.domainResume(this);
+    }
+
+    /**
+     * Suspends the domain using guest power management.
+     * @throws {LibvirtError} If suspending the domain fails
+     */
+    async pmSuspend(target: NodeSuspendTarget = NodeSuspendTarget.MEM): Promise<void> {
+        return this.hypervisor.domainPMSuspend(this, target);
     }
 
     /**

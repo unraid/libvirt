@@ -1,4 +1,4 @@
-import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo } from './types.js';
+import { Domain as NativeDomain, DomainInfo, DomainGetXMLDescFlags, ConnectListAllDomainsFlags, NodeInfo, NodeSuspendTarget } from './types.js';
 import { Domain } from './domain.js';
 import { createRequire } from 'node:module';
 import { wrapMethod } from './error.js';
@@ -201,6 +201,31 @@ export class Hypervisor {
         return wrapMethod(
             this.nativeHypervisor.domainResume.bind(this.nativeHypervisor),
             domain.getNativeDomain()
+        );
+    }
+
+    /**
+     * Wakes a domain that is suspended by guest power management.
+     * @param domain - The domain to wake up
+     * @throws {LibvirtError} If waking the domain fails
+     */
+    async domainPMWakeup(domain: Domain): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainPMWakeup.bind(this.nativeHypervisor),
+            domain.getNativeDomain()
+        );
+    }
+
+    /**
+     * Suspends a domain using guest power management.
+     * @param domain - The domain to suspend
+     * @throws {LibvirtError} If suspending the domain fails
+     */
+    async domainPMSuspend(domain: Domain, target: NodeSuspendTarget = NodeSuspendTarget.MEM): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainPMSuspend.bind(this.nativeHypervisor),
+            domain.getNativeDomain(),
+            target
         );
     }
 

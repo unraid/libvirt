@@ -940,3 +940,105 @@ Napi::Value Hypervisor::DomainResume(const Napi::CallbackInfo& info) {
 
     return deferred.Promise();
 }
+
+/******************************************************************************
+ * DomainPMWakeup                                                           *
+ ******************************************************************************/
+
+class DomainPMWakeupWorker : public Worker {
+ public:
+    DomainPMWakeupWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain)
+        : Worker(callback, deferred, hypervisor), domain(domain) {}
+
+    void Execute(void) override {
+        int ret = virDomainPMWakeup(domain->domainPtr, 0);
+        if (ret < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+};
+
+Napi::Value Hypervisor::DomainPMWakeup(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    DomainPMWakeupWorker* worker = new DomainPMWakeupWorker(
+        callback, deferred, this, domain);
+    worker->Queue();
+
+    return deferred.Promise();
+}
+
+/******************************************************************************
+ * DomainPMSuspend                                                          *
+ ******************************************************************************/
+
+class DomainPMSuspendWorker : public Worker {
+ public:
+    DomainPMSuspendWorker(
+        Napi::Function const& callback,
+        Napi::Promise::Deferred deferred,
+        Hypervisor* hypervisor,
+        Domain* domain,
+        unsigned int target)
+        : Worker(callback, deferred, hypervisor), domain(domain), target(target) {}
+
+    void Execute(void) override {
+        int ret = virDomainPMSuspendForDuration(
+            domain->domainPtr,
+            target,
+            0,
+            0);
+        if (ret < 0) SetVirError();
+    }
+
+ private:
+    Domain* domain;
+    unsigned int target;
+};
+
+Napi::Value Hypervisor::DomainPMSuspend(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+    Napi::Function callback = Napi::Function::New(env, dummyCallback);
+
+    if (info.Length() <= 0 || !info[0].IsObject()) {
+        deferred.Reject(Napi::String::New(env, "Expected an object."));
+        return deferred.Promise();
+    }
+
+    Domain* domain = Napi::ObjectWrap<Domain>::Unwrap(
+        info[0].As<Napi::Object>());
+
+    unsigned int target = VIR_NODE_SUSPEND_TARGET_MEM;
+    if (info.Length() >= 2 && info[1].IsNumber()) {
+        target = info[1].As<Napi::Number>();
+    } else if (info.Length() >= 2 && !info[1].IsNumber()) {
+        deferred.Reject(Napi::String::New(env, "Expected a number."));
+        return deferred.Promise();
+    }
+
+    DomainPMSuspendWorker* worker = new DomainPMSuspendWorker(
+        callback, deferred, this, domain, target);
+    worker->Queue();
+
+    return deferred.Promise();
+}

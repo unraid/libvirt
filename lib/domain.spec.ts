@@ -1,11 +1,13 @@
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 import { Domain } from './domain.js';
 import { Hypervisor } from './hypervisor.js';
-import { DomainGetXMLDescFlags, DomainState } from './types.js';
+import { DomainGetXMLDescFlags, DomainState, NodeSuspendTarget } from './types.js';
 
 describe('Domain', () => {
     let domain: Domain;
     let hypervisor: Hypervisor;
+    let domainGetInfo: ReturnType<typeof vi.fn>;
+    let domainPMWakeup: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
         // Mock the hypervisor methods
@@ -15,7 +17,7 @@ describe('Domain', () => {
         const domainDestroy = vi.fn();
         const domainUndefine = vi.fn();
         const domainGetXMLDesc = vi.fn().mockResolvedValue('<domain/>');
-        const domainGetInfo = vi.fn().mockResolvedValue({
+        domainGetInfo = vi.fn().mockResolvedValue({
             state: DomainState.RUNNING,
             maxMem: 1024,
             memory: 512,
@@ -27,6 +29,8 @@ describe('Domain', () => {
         const domainGetUUIDString = vi.fn().mockResolvedValue('123e4567-e89b-12d3-a456-426614174000');
         const domainSuspend = vi.fn();
         const domainResume = vi.fn();
+        domainPMWakeup = vi.fn();
+        const domainPMSuspend = vi.fn();
 
         // Create mock hypervisor
         hypervisor = {
@@ -41,7 +45,9 @@ describe('Domain', () => {
             domainGetName,
             domainGetUUIDString,
             domainSuspend,
-            domainResume
+            domainResume,
+            domainPMWakeup,
+            domainPMSuspend
         } as unknown as Hypervisor;
 
         // Mock the native domain
@@ -98,7 +104,36 @@ describe('Domain', () => {
     describe('resume', () => {
         it('should resume the domain', async () => {
             await domain.resume();
+            expect(hypervisor.domainGetInfo).toHaveBeenCalledWith(domain);
             expect(hypervisor.domainResume).toHaveBeenCalledWith(domain);
         });
+
+        it('should wake a PMSUSPENDED domain', async () => {
+            domainGetInfo.mockResolvedValueOnce({
+                state: DomainState.PMSUSPENDED,
+                maxMem: 1024,
+                memory: 512,
+                nrVirtCpu: 1,
+                cpuTime: 0
+            });
+
+            await domain.resume();
+
+            expect(hypervisor.domainGetInfo).toHaveBeenCalledWith(domain);
+            expect(hypervisor.domainPMWakeup).toHaveBeenCalledWith(domain);
+            expect(hypervisor.domainResume).not.toHaveBeenCalled();
+        });
     });
-}); 
+
+    describe('pmSuspend', () => {
+        it('should suspend the domain with power management', async () => {
+            await domain.pmSuspend();
+            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain, NodeSuspendTarget.MEM);
+        });
+
+        it('should allow overriding the suspend target', async () => {
+            await domain.pmSuspend(NodeSuspendTarget.DISK);
+            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain, NodeSuspendTarget.DISK);
+        });
+    });
+});

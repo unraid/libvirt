@@ -989,6 +989,10 @@ Napi::Value Hypervisor::DomainPMWakeup(const Napi::CallbackInfo& info) {
  * DomainPMSuspend                                                          *
  ******************************************************************************/
 
+#ifndef VIR_DOMAIN_PMSUSPEND_MEM
+#define VIR_DOMAIN_PMSUSPEND_MEM 0
+#endif
+
 class DomainPMSuspendWorker : public Worker {
  public:
     DomainPMSuspendWorker(

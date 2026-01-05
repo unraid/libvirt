@@ -56,8 +56,9 @@ export class Domain {
     }
 
     /**
-     * Resumes a paused domain.
-     * This operation restarts execution of a domain that was previously paused.
+     * Resumes a paused or PM-suspended domain.
+     * If the domain is in PMSUSPENDED state, wakes it using PM wakeup.
+     * Otherwise, resumes execution of a domain that was previously paused.
      * @throws {LibvirtError} If resuming the domain fails
      */
     async resume(): Promise<void> {

@@ -158,7 +158,8 @@ export class LibvirtError extends Error {
 
         // Add more context to the error message
         if (message === 'Expected a number.') {
-            this.message = `Type error: Expected a number but received ${typeof str1 || 'undefined'}. This error typically occurs when calling libvirt methods that require numeric parameters.`;
+            const received = str1 ?? 'undefined';
+            this.message = `Type error: Expected a number but received '${received}'. This error typically occurs when calling libvirt methods that require numeric parameters.`;
         }
     }
 

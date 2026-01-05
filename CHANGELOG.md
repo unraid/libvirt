@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/unraid/libvirt/compare/v2.1.0...v2.2.0) (2026-01-05)
+
+
+### Features
+
+* Resume PMSUSPENDED domains by invoking PM wakeup ([#65](https://github.com/unraid/libvirt/issues/65)) ([d22d53b](https://github.com/unraid/libvirt/commit/d22d53baa237936df9ebfa790a0c6408b34798f2))
+
 ## [2.1.0](https://github.com/unraid/libvirt/compare/v2.0.4...v2.1.0) (2025-03-30)
 
 

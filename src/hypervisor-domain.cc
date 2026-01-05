@@ -989,10 +989,6 @@ Napi::Value Hypervisor::DomainPMWakeup(const Napi::CallbackInfo& info) {
  * DomainPMSuspend                                                          *
  ******************************************************************************/
 
-#ifndef VIR_DOMAIN_PMSUSPEND_MEM
-#define VIR_DOMAIN_PMSUSPEND_MEM 0
-#endif
-
 class DomainPMSuspendWorker : public Worker {
  public:
     DomainPMSuspendWorker(
@@ -1005,7 +1001,7 @@ class DomainPMSuspendWorker : public Worker {
     void Execute(void) override {
         int ret = virDomainPMSuspendForDuration(
             domain->domainPtr,
-            VIR_DOMAIN_PMSUSPEND_MEM,
+            VIR_NODE_SUSPEND_TARGET_MEM,
             0,
             0);
         if (ret < 0) SetVirError();

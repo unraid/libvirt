@@ -30,6 +30,7 @@ describe('Domain', () => {
         const domainSuspend = vi.fn();
         const domainResume = vi.fn();
         domainPMWakeup = vi.fn();
+        const domainPMSuspend = vi.fn();
 
         // Create mock hypervisor
         hypervisor = {
@@ -45,7 +46,8 @@ describe('Domain', () => {
             domainGetUUIDString,
             domainSuspend,
             domainResume,
-            domainPMWakeup
+            domainPMWakeup,
+            domainPMSuspend
         } as unknown as Hypervisor;
 
         // Mock the native domain
@@ -120,6 +122,13 @@ describe('Domain', () => {
             expect(hypervisor.domainGetInfo).toHaveBeenCalledWith(domain);
             expect(hypervisor.domainPMWakeup).toHaveBeenCalledWith(domain);
             expect(hypervisor.domainResume).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('pmSuspend', () => {
+        it('should suspend the domain with power management', async () => {
+            await domain.pmSuspend();
+            expect(hypervisor.domainPMSuspend).toHaveBeenCalledWith(domain);
         });
     });
 });

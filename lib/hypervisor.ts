@@ -217,6 +217,18 @@ export class Hypervisor {
     }
 
     /**
+     * Suspends a domain using guest power management.
+     * @param domain - The domain to suspend
+     * @throws {LibvirtError} If suspending the domain fails
+     */
+    async domainPMSuspend(domain: Domain): Promise<void> {
+        return wrapMethod(
+            this.nativeHypervisor.domainPMSuspend.bind(this.nativeHypervisor),
+            domain.getNativeDomain()
+        );
+    }
+
+    /**
      * Forcefully terminates a domain.
      * @param domain - The domain to destroy
      * @throws {LibvirtError} If destroying the domain fails

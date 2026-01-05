@@ -42,6 +42,7 @@ class DomainUndefineWorker;
 class DomainSuspendWorker;
 class DomainResumeWorker;
 class DomainPMWakeupWorker;
+class DomainPMSuspendWorker;
 
 class NodeGetInfoWorker;
 
@@ -77,6 +78,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     Napi::Value DomainSuspend(const Napi::CallbackInfo& info);
     Napi::Value DomainResume(const Napi::CallbackInfo& info);
     Napi::Value DomainPMWakeup(const Napi::CallbackInfo& info);
+    Napi::Value DomainPMSuspend(const Napi::CallbackInfo& info);
 
     Napi::Value NodeGetInfo(const Napi::CallbackInfo& info);
 
@@ -110,6 +112,7 @@ class Hypervisor : public Napi::ObjectWrap<Hypervisor> {
     friend class DomainUndefineWorker;
     friend class DomainResumeWorker;
     friend class DomainPMWakeupWorker;
+    friend class DomainPMSuspendWorker;
 
     friend class NodeGetInfoWorker;
 };

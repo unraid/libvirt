@@ -69,6 +69,14 @@ export class Domain {
     }
 
     /**
+     * Suspends the domain using guest power management.
+     * @throws {LibvirtError} If suspending the domain fails
+     */
+    async pmSuspend(): Promise<void> {
+        return this.hypervisor.domainPMSuspend(this);
+    }
+
+    /**
      * Forcefully terminates the domain.
      * This is equivalent to pulling the power plug on a physical machine.
      * @throws {LibvirtError} If destroying the domain fails

@@ -19,4 +19,21 @@ describe('Hypervisor', () => {
 
         expect(domainPMWakeup).toHaveBeenCalledWith({ id: 'native' });
     });
+
+    it('should suspend a domain with power management', async () => {
+        const hypervisor = Object.create(Hypervisor.prototype) as Hypervisor;
+        const domainPMSuspend = vi.fn().mockResolvedValue(undefined);
+
+        (hypervisor as any).nativeHypervisor = {
+            domainPMSuspend
+        };
+
+        const domain = {
+            getNativeDomain: vi.fn().mockReturnValue({ id: 'native' })
+        } as unknown as Domain;
+
+        await hypervisor.domainPMSuspend(domain);
+
+        expect(domainPMSuspend).toHaveBeenCalledWith({ id: 'native' });
+    });
 });

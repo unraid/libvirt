@@ -42,6 +42,7 @@ Napi::Object Hypervisor::Init(Napi::Env env, Napi::Object exports) {
         InstanceMethod("domainSuspend", &Hypervisor::DomainSuspend),
         InstanceMethod("domainResume", &Hypervisor::DomainResume),
         InstanceMethod("domainPMWakeup", &Hypervisor::DomainPMWakeup),
+        InstanceMethod("domainPMSuspend", &Hypervisor::DomainPMSuspend),
 
         InstanceMethod("nodeGetInfo", &Hypervisor::NodeGetInfo)
     });

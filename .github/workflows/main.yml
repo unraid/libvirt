@@ -27,6 +27,9 @@ jobs:
     needs: [release-please]
     # Run on all PRs, or when a release is created
     if: ${{ github.event_name == 'pull_request' || needs.release-please.outputs.release_created }}
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@v6
@@ -47,6 +50,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -73,16 +77,9 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Setup NPM Authentication
+      - name: Publish to NPM with trusted publishing
         if: ${{ needs.release-please.outputs.release_created }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-      - name: Publish to NPM
-        if: ${{ needs.release-please.outputs.release_created }}
-        run: pnpm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish
 
   prebuild:
     name: Build and (Possibly) Publish Pre-built Binaries

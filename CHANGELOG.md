@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/unraid/libvirt/compare/v2.2.0...v2.2.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* trigger ci ([b457a5b](https://github.com/unraid/libvirt/commit/b457a5b5f82ed73b8e1c5cf82cc045ef87fc952c))
+
 ## [2.2.0](https://github.com/unraid/libvirt/compare/v2.1.0...v2.2.0) (2026-01-05)
 
 
